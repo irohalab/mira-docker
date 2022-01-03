@@ -108,9 +108,9 @@ services:
     ports:
       - ${ALBIREO_PORT:-30001}:5000
     volumes:
-      - ${ALBIREO_CONFIG:-./config/albireo/config.yml}:/usr/app/config/config.yml:ro
-      - ${ALBIREO_SENTRY:-./config/albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
-      - ${ALBIREO_ALEMBIC:-./config/albireo/alembic.ini}:/usr/app/alembic.ini:ro
+      - ${ALBIREO_CONFIG:-./albireo/config.yml}:/usr/app/config/config.yml:ro
+      - ${ALBIREO_SENTRY:-./albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_ALEMBIC:-./albireo/alembic.ini}:/usr/app/alembic.ini:ro
       - ${ALBIREO_DATA:-/data/albireo}:/data/Albireo:rw
     command: 'twistd -n --pidfile= web --port 5000 -wsgi appd.app'
     restart: unless-stopped
@@ -124,9 +124,9 @@ services:
       PYTHONUNBUFFERED: 1
       EXECJS_RUNTIME: "Node"
     volumes:
-      - ${ALBIREO_CONFIG:-./config/albireo/config.yml}:/usr/app/config/config.yml:ro
-      - ${ALBIREO_SENTRY:-./config/albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
-      - ${ALBIREO_ALEMBIC:-./config/albireo/alembic.ini}:/usr/app/alembic.ini:ro
+      - ${ALBIREO_CONFIG:-./albireo/config.yml}:/usr/app/config/config.yml:ro
+      - ${ALBIREO_SENTRY:-./albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_ALEMBIC:-./albireo/alembic.ini}:/usr/app/alembic.ini:ro
       - ${ALBIREO_DATA:-/data/albireo}:/data/Albireo:rw
     command: '/usr/bin/python Scheduler.py'
     restart: unless-stopped
