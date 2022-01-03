@@ -1,0 +1,134 @@
+##
+# to use this docker-compose override, create the following folders
+# download-manager: put config.yml and ormconfig.json to this folder for mira-download-manager
+# video-manager: put config.yml and ormconfig.json to this folder for mira-video-manager
+##
+version: '3.9'
+services:
+  download-manager:
+    image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
+    profiles: ['download-manager', 'prod']
+    container_name: 'mira-download-manager_core'
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+    volumes:
+      - ./download-manager/config.yml:/etc/mira/config.yml
+      - ./download-manager/ormconfig.json:/etc/mira/ormconfig.json
+    restart: unless-stopped
+    command: 'node dist/main.js'
+    depends_on:
+      - postgres
+      - qbittorrent
+
+  download-manager-api:
+    image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
+    container_name: 'mira-download-manager_api'
+    profiles: ['download-manager', 'prod']
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+    volumes:
+      - ./download-manager/config.yml:/etc/mira/config.yml
+      - ./download-manager/ormconfig.json:/etc/mira/ormconfig.json
+    restart: unless-stopped
+    command: 'node dist/WebServer.js'
+    depends_on:
+      - postgres
+      - qbittorrent
+
+  video-manager-job-scheduler:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'mira-video-manager_job-scheduler'
+    profiles: ['video-manager', 'prod']
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+      START_AS: JOB_SCHEDULER
+    volumes:
+      - ./video-manager/config.yml:/etc/mira/config.yml
+      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+    restart: unless-stopped
+    command: 'node dist/main.js'
+    depends_on:
+      - postgres
+
+  video-manager-job-executor:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'mira-video-manager_job-executor'
+    profiles: ['video-manager', 'prod']
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+      START_AS: JOB_EXECUTOR
+    volumes:
+      - ./video-manager/config.yml:/etc/mira/config.yml
+      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+    restart: unless-stopped
+    command: 'node dist/main.js'
+    depends_on:
+      - postgres
+
+  video-manager-api:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'mira-video-manager_api'
+    profiles: ['video-manager', 'prod']
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+      START_AS: API_SERVER
+    volumes:
+      - ./video-manager/config.yml:/etc/mira/config.yml
+      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+    restart: unless-stopped
+    command: 'node dist/WebServer.js'
+
+  video-manager-job-executor-file-server:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'mira-video-manager_job-executor-file-server'
+    profiles: ['video-manager', 'prod']
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+      START_AS: JOB_EXECUTOR
+    volumes:
+      - ./video-manager/config.yml:/etc/mira/config.yml
+      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+    restart: unless-stopped
+    command: 'node dist/WebServer.js'
+    depends_on:
+      - postgres
+
+  albireo-server-prod:
+    image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
+    profiles: ['albireo', 'prod']
+    environment:
+      PYTHONUNBUFFERED: 1
+    # you can comment out this if your reverse-proxy is using the same docker network
+    ports:
+      - ${ALBIREO_PORT:-30001}:5000
+    volumes:
+      - ${ALBIREO_CONFIG:-./config/albireo/config.yml}:/usr/app/config/config.yml:ro
+      - ${ALBIREO_SENTRY:-./config/albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_ALEMBIC:-./config/albireo/alembic.ini}:/usr/app/alembic.ini:ro
+      - ${ALBIREO_DATA:-/data/albireo}:/data/Albireo:rw
+    command: 'twistd -n --pidfile= web --port 5000 -wsgi appd.app'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  albireo-scheduler-prod:
+    image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
+    profiles: ['albireo', 'prod']
+    environment:
+      PYTHONUNBUFFERED: 1
+      EXECJS_RUNTIME: "Node"
+    volumes:
+      - ${ALBIREO_CONFIG:-./config/albireo/config.yml}:/usr/app/config/config.yml:ro
+      - ${ALBIREO_SENTRY:-./config/albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_ALEMBIC:-./config/albireo/alembic.ini}:/usr/app/alembic.ini:ro
+      - ${ALBIREO_DATA:-/data/albireo}:/data/Albireo:rw
+    command: '/usr/bin/python Scheduler.py'
+    restart: unless-stopped
+    depends_on:
+      - postgres
