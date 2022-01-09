@@ -13,24 +13,26 @@ services:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
     volumes:
-      - ./download-manager/config.yml:/etc/mira/config.yml
-      - ./download-manager/ormconfig.json:/etc/mira/ormconfig.json
+      - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${DM_CONFIG_DIR:-./download-manager/}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/download
     restart: unless-stopped
     command: 'node dist/main.js'
     depends_on:
       - postgres
       - qbittorrent
 
-  download-manager-api:
+  download-manager-server:
     image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
-    container_name: 'mira-download-manager_api'
+    container_name: 'mira-download-manager_server'
     profiles: ['download-manager', 'prod']
     environment:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
     volumes:
-      - ./download-manager/config.yml:/etc/mira/config.yml
-      - ./download-manager/ormconfig.json:/etc/mira/ormconfig.json
+      - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${DOWNLOAD:-/data/albireo}:/data/download
     restart: unless-stopped
     command: 'node dist/WebServer.js'
     depends_on:
@@ -46,8 +48,9 @@ services:
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: JOB_SCHEDULER
     volumes:
-      - ./video-manager/config.yml:/etc/mira/config.yml
-      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
     restart: unless-stopped
     command: 'node dist/main.js'
     depends_on:
@@ -62,8 +65,9 @@ services:
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: JOB_EXECUTOR
     volumes:
-      - ./video-manager/config.yml:/etc/mira/config.yml
-      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
     restart: unless-stopped
     command: 'node dist/main.js'
     depends_on:
@@ -78,8 +82,9 @@ services:
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: API_SERVER
     volumes:
-      - ./video-manager/config.yml:/etc/mira/config.yml
-      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
     restart: unless-stopped
     command: 'node dist/WebServer.js'
 
@@ -92,15 +97,17 @@ services:
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: JOB_EXECUTOR
     volumes:
-      - ./video-manager/config.yml:/etc/mira/config.yml
-      - ./video-manager/ormconfig.json:/etc/mira/ormconfig.json
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
     restart: unless-stopped
     command: 'node dist/WebServer.js'
     depends_on:
       - postgres
 
-  albireo-server-prod:
+  albireo-server:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
+    container_name: 'albireo-server'
     profiles: ['albireo', 'prod']
     environment:
       PYTHONUNBUFFERED: 1
@@ -108,26 +115,27 @@ services:
     ports:
       - ${ALBIREO_PORT:-30001}:5000
     volumes:
-      - ${ALBIREO_CONFIG:-./albireo/config.yml}:/usr/app/config/config.yml:ro
-      - ${ALBIREO_SENTRY:-./albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
-      - ${ALBIREO_ALEMBIC:-./albireo/alembic.ini}:/usr/app/alembic.ini:ro
-      - ${ALBIREO_DATA:-/data/albireo}:/data/Albireo:rw
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/config.yml:/usr/app/config/config.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/Albireo:rw
     command: 'twistd -n --pidfile= web --port 5000 -wsgi appd.app'
     restart: unless-stopped
     depends_on:
       - postgres
 
-  albireo-scheduler-prod:
+  albireo-scheduler:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
+    container_name: 'albireo-scheduler'
     profiles: ['albireo', 'prod']
     environment:
       PYTHONUNBUFFERED: 1
       EXECJS_RUNTIME: "Node"
     volumes:
-      - ${ALBIREO_CONFIG:-./albireo/config.yml}:/usr/app/config/config.yml:ro
-      - ${ALBIREO_SENTRY:-./albireo/sentry.yml}:/usr/app/config/sentry.yml:ro
-      - ${ALBIREO_ALEMBIC:-./albireo/alembic.ini}:/usr/app/alembic.ini:ro
-      - ${ALBIREO_DATA:-/data/albireo}:/data/Albireo:rw
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/config.yml:/usr/app/config/config.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/Albireo:rw
     command: '/usr/bin/python Scheduler.py'
     restart: unless-stopped
     depends_on:

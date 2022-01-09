@@ -1,0 +1,32 @@
+version: 1
+# amqp config for connecting to amqp server
+amqp:
+  host: "localhost"
+  port: 5672
+  user: "guest"
+  password: "guest"
+
+# amqp url has higher priority than amqp config object
+amqpUrl: ''
+
+downloader: 'qbittorrent' # Currently, only support 'deluge' and 'qbittorrent
+# download location support variable like ${home} ${cwd} ${project_root}
+download_location: '/data/download'
+
+download_manager_id: 'Mikage'
+deluge:
+  json_rpc_url: 'http://localhost:8112/json'
+  password: 'deluge'
+qBittorrent:
+  api_url: 'http://qbittorrent:8091/api/v2'
+  username: 'admin'
+  password: 'Pc2hwfwIeWH1'
+
+# used for composing the url for downloading output file from job executor, default is http://localhost:8000/output/
+webserver:
+  enabledHttps: false
+  host: "download-manager-server"
+  port: 8081
+
+# will deprecate once Albireo is deprecated
+albireoRPC: 'http://albireo-scheduler:8080'

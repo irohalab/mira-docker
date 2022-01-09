@@ -29,12 +29,12 @@ services:
     restart: unless-stopped
     volumes:
       - ${QBT_DOWNLOADS_LOCATION:-/data/downloads}:/downloads
-      - ${QBT_CONFIG_LOCATION:-./config/qbittorrent}:/config
+      - ${QBT_CONFIG_LOCATION:-./qb/qbittorrent}:/config
   nginx:
     image: nginx:1.19
     profiles: ['prod', 'nginx']
     volumes:
-      - ${NGINX_CONFIG:-./config/nginx.conf}:/etc/nginx/nginx.conf:ro
-      - ${NGINX_DATA:-/data/albireo/}:/home/wwwroot/albireo:ro
-      - ${NGINX_DENEB:-./config/deneb/deploy}:/home/wwwroot/deneb:ro
+      - ${NGINX_CONFIG:-./nginx/nginx.conf}:/etc/nginx/nginx.conf:ro
+      - ${DOWNLOAD_DATA:-/data/albireo/}:/home/wwwroot/albireo:ro
+      - ${NGINX_DENEB:-./web/}:/home/wwwroot/mira:ro
     restart: always

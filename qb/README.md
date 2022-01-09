@@ -1,0 +1,1 @@
+We don't need prepare config file. qbittorrent should able generate this for us.

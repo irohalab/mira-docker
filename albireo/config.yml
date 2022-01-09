@@ -1,0 +1,83 @@
+database:
+  database: albireo
+  username: bob
+  password: 123456
+  host: postgres
+  port: 5432
+
+deluge:
+  host: 127.0.0.1
+  port: 58846
+  username: deluge
+  password: deluge
+
+task:
+  interval: 2  # unit minute
+  info_scanner:
+    scan_time: 04:00 # A info scanner will scheduled for once a day at this particular time. it is not an accurate time, default is 23:00
+    scan_time_format: # default is '%H:%M' see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+  delete_delay: # delay for delete any resources. 0 represents immediately
+    bangumi: 1 # unit minute
+    episode: 0 # unit minute
+  download_status_scanner:
+    scan_time: '05:00' # A download status scanner will scheduled for once a day at this particular time. it is not an accurate time, default is 23:00
+    scan_time_format: # default is '%H:%M' see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+download:
+  location: /data/albireo  # change this location
+
+app_secret_key: mira_inose_mai
+app_secret_password_salt: mira_manaka_ao
+
+feedparser:
+  timeout: 60 # timeout in seconds
+  proxy:
+    default: # default http proxy for feedparser , for example http://127.0.0.1:8000
+#    dmhy: # proxy for dmhy, either an url string or a dictionary with http, https, ftp scheme
+#      http: http://127.0.0.1:8000/
+#      https: https://127.0.0.1:9000/
+#      ftp: http://127.0.0.1:8000/
+
+# Setting a different domain for resource will speed up your page load
+# a scheme is required, e.g. https://static.example.com
+# this is optional
+domain:
+  image: mira-static # the image domain for your image resource, such as thumbnails and cover
+  video: mira-static # the video domain for your video resource
+
+# site name
+site:
+  name: 'Mira'
+  host: 'mira' # hostname and port
+  protocol: 'http'
+
+
+# mail configuration reference at: https://pythonhosted.org/flask-mail/
+mail:
+  mail_server: 'yourmailserver.com'
+  mail_port: 587
+  mail_use_tls: True
+  mail_use_ssl: False
+  mail_username: somemail@yourmailserver.com
+  mail_password: '123456'
+  mail_default_sender: somemail@yourmailserver.com
+
+# RPC
+rpc:
+  server_host: localhost
+  server_port: 8080
+
+# Universal Feed
+universal:
+  dmhy: https://res.iroha.io/dmhy/item
+  bangumi_moe: https://res.iroha.io/bangumi-moe/item
+  nyaa: https://res.iroha.io/nyaa/item
+
+# amqp
+amqp:
+  host: 'localhost'
+  port: 5672
+  user: 'guest'
+  password: 'guest'
+
+download_manager_url: 'http://download-manager-server:8081'
+video_manager_url: 'http://video-manager-api:8083'
