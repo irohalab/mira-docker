@@ -247,7 +247,7 @@ env_list = [
 
 if use_postgres_docker == 'y':
     env_list.append('POSTGRES_USER=' + postgres_user)
-    env_list.append('POSTGRES_PASSWORD=' + postgres_user)
+    env_list.append('POSTGRES_PASSWORD=' + postgres_password)
     env_list.append('POSTGRES_DATA=' + location_for_postgres_data)
 
 
