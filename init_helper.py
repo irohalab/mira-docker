@@ -1,4 +1,5 @@
 import json
+import os
 from os import mkdir
 from os.path import join, exists, expanduser
 from secrets import token_hex
@@ -10,32 +11,36 @@ import configparser
 home = expanduser('~')
 mira = join(home, 'mira')
 
+dm_docker_tag = input('version tag of download manager image')
+vm_docker_tag = input('version tag of video manager image')
+albireo_docker_tag = input('version tag of albireo image')
+
 default_download_manager_conf_dir = join(mira, 'download-manager')
-tip_dm_config = 'location for download-manager config files: (current: {0})'.format(default_download_manager_conf_dir)
+tip_dm_config = 'location for download-manager config files (current: {0}): '.format(default_download_manager_conf_dir)
 download_manager_conf_dir = input(tip_dm_config)
 if not download_manager_conf_dir:
     download_manager_conf_dir = default_download_manager_conf_dir
 
 default_video_manager_conf_dir = join(mira, 'video-manager')
-tip_vm_config = 'location for video-manager config files: (current: {0})'.format(default_video_manager_conf_dir)
+tip_vm_config = 'location for video-manager config files (current: {0}): '.format(default_video_manager_conf_dir)
 video_manager_conf_dir = input(tip_vm_config)
 if not video_manager_conf_dir:
     video_manager_conf_dir = default_video_manager_conf_dir
 
 default_albireo_conf_dir = join(mira, 'albireo')
-tip_albireo_config = 'location for albireo config files: (current: {0})'.format(default_albireo_conf_dir)
+tip_albireo_config = 'location for albireo config files (current: {0}): '.format(default_albireo_conf_dir)
 albireo_conf_dir = input(tip_albireo_config)
 if not albireo_conf_dir:
     albireo_conf_dir = default_albireo_conf_dir
 
 default_nginx_conf_dir = join(mira, 'nginx')
-tip_nginx_config = 'location for nginx config files: (current: {0})'.format(default_nginx_conf_dir)
+tip_nginx_config = 'location for nginx config files (current: {0}): '.format(default_nginx_conf_dir)
 nginx_conf_dir = input(tip_nginx_config)
 if not nginx_conf_dir:
     nginx_conf_dir = default_nginx_conf_dir
 
 default_qb_conf_dir = join(mira, 'qb')
-tip_qb_config = 'location for qBittorrent config files: (current: {0})'.format(default_qb_conf_dir)
+tip_qb_config = 'location for qBittorrent config files (current: {0}): '.format(default_qb_conf_dir)
 qb_conf_dir = input(tip_qb_config)
 if not qb_conf_dir:
     qb_conf_dir = default_qb_conf_dir
@@ -56,15 +61,15 @@ else:
     amqp_password = input('amqp password: ')
 
 print('enter login credentials to connect qbittorrent daemon')
-qb_user = input('qbittorrent username: (press enter to use admin')
+qb_user = input('qbittorrent username (press enter to use admin: ')
 if not qb_user:
     qb_user = 'admin'
 
-qb_password = input('qbittorent password:(press enter to generate a random one)')
+qb_password = input('qbittorent password (press enter to generate a random one): ')
 if not qb_password:
     qb_password = token_hex(nbytes=16)
 
-download_location = input('data path for albireo, default is /data/albireo')
+download_location = input('data path for albireo, default is /data/albireo: ')
 if not download_location:
     download_location = '/data/albireo'
 
@@ -72,13 +77,23 @@ use_postgres_docker = None
 while use_postgres_docker != 'y' and use_postgres_docker != 'n':
     use_postgres_docker = input('Do you want to use the postgres service in the docker-compos file? y for yes, n for no: ')
 
-postgres_user = input('username for postgres: (press ENTER to use postgres)')
+postgres_host = 'postgres'
+postgres_port = 5432
+if use_postgres_docker == 'n':
+    postgres_host = input('Please enter your postgres server host: ')
+    postgres_port = int(input('Please enter your postgres server port: '))
+
+postgres_user = input('username for postgres (press ENTER to use postgres): ')
 if not postgres_user:
     postgres_user = 'postgres'
 
-postgres_password = input('password for postgres: (press ENTER to use randomly generated password)')
+postgres_password = input('password for postgres (press ENTER to use randomly generated password): ')
 if not postgres_password:
     postgres_password = token_hex(nbytes=16)
+
+db_name_albireo = input('database name for albireo (default is albireo): ')
+db_name_vm = input('database name for video manager (default is mira-video): ')
+db_name_dm = input('database name for download manager (default is mira-download): ')
 
 location_for_postgres_data = input('location for postgres data: (press ENTER to use /var/mira/data)')
 if not location_for_postgres_data:
@@ -91,6 +106,12 @@ while dm_enable_https != 'y' and dm_enable_https != 'n':
 vm_enable_https = None
 while vm_enable_https != 'y' and vm_enable_https != 'n':
     vm_enable_https = input('Enable https for video manager server? y for yes, n for no: ')
+
+default_admin_albireo = input('Enter the default admin user for albireo (Enter to use admin): ')
+default_admin_password_albireo = input('Enter the default admin user password for albireo (Enter to use generated password): ')
+if not default_admin_albireo:
+    default_admin_albireo = 'admin'
+    default_admin_password_albireo = token_hex(nbytes=16)
 
 print('All info collected. Start to generate docker-compose and configuration files...')
 
@@ -193,8 +214,12 @@ write_yaml(download_manager_conf, dm_conf_dict)
 # Update download-manager/ormconfig.json
 
 dm_ormconf_dict = load_json(download_manager_ormconf)
+dm_ormconf_dict['host'] = postgres_host
+dm_ormconf_dict['port'] = postgres_port
 dm_ormconf_dict['username'] = postgres_user
 dm_ormconf_dict['password'] = postgres_password
+if db_name_dm:
+    dm_ormconf_dict['database'] = db_name_dm
 write_json(download_manager_ormconf, dm_ormconf_dict)
 
 # Update video-manager/config.yml
@@ -208,15 +233,23 @@ write_yaml(video_manager_conf, vm_conf_dict)
 
 # update video-manager/ormconfig.json
 vm_ormconf_dict = load_json(video_manager_ormconf)
+vm_ormconf_dict['host'] = postgres_host
+vm_ormconf_dict['port'] = postgres_port
 vm_ormconf_dict['username'] = postgres_user
 vm_ormconf_dict['password'] = postgres_password
+if db_name_vm:
+    vm_ormconf_dict['database'] = db_name_vm
 write_json(video_manager_ormconf, vm_ormconf_dict)
 
 # update albireo config
 
 albireo_conf_dict = load_yaml(albireo_conf)
+albireo_conf_dict['database']['host'] = postgres_host
+albireo_conf_dict['database']['port'] = postgres_port
 albireo_conf_dict['database']['username'] = postgres_user
 albireo_conf_dict['database']['password'] = postgres_password
+if db_name_albireo:
+    albireo_conf_dict['database']['database'] = db_name_albireo
 if dm_enable_https == 'y':
     albireo_conf_dict['download_manager_url'] = enable_https_on_url(albireo_conf_dict['download_manager_url'])
 
@@ -228,7 +261,12 @@ write_yaml(albireo_conf, albireo_conf_dict)
 # update albireo ormconf.json
 alembic_conf_dict = configparser.ConfigParser()
 alembic_conf_dict.read(albireo_alembic_ini)
-alembic_conf_dict['alembic']['sqlalchemy.url'] = 'postgres://{0}:{1}@postgres/albireo'.format(postgres_user, postgres_password)
+if use_postgres_docker == 'y':
+    postgres_host = 'postgres'
+    postgres_port = 5432
+alembic_conf_dict['alembic']['sqlalchemy.url'] = 'postgres://{0}:{1}@{2}:{3}/{4}'.format(
+    postgres_host, postgres_port, postgres_user, postgres_password, albireo_conf_dict['database']['database']
+)
 
 with open(albireo_alembic_ini, 'w') as alembic_conf_fd:
     alembic_conf_dict.write(alembic_conf_fd)
@@ -242,7 +280,10 @@ env_list = [
     'NGINX_CONFIG=' + nginx_conf_dir,
     'QBT_CONFIG_LOCATION=' + qb_conf_dir,
     'QBT_DOWNLOADS_LOCATION=' + join(download_location, 'downloads'),
-    'DOWNLOAD_DATA=' + download_location
+    'DOWNLOAD_DATA=' + download_location,
+    'DOWNLOAD_MANAGER_TAG=' + dm_docker_tag,
+    'VIDEO_MANAGER_TAG=' + vm_docker_tag,
+    'ALBIREO_TAG=' + albireo_docker_tag
 ]
 
 if use_postgres_docker == 'y':
@@ -253,5 +294,39 @@ if use_postgres_docker == 'y':
 
 with open(join(mira, 'env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
+
+print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
+os.system('docker run --rm ghcr.io/irohalab/albireo:{0}' +
+          ' --env-file env'
+          ' -v {1}:/usr/app/config/config.yml' +
+          ' -v {2}:/usr/app/config/sentry.yml' +
+          ' -v {3}:/usr/app/alembic.ini' +
+          ' -v {4}:/data/Albireo' +
+          ' /usr/bin/python /usr/app/tools.py --db-init' +
+          ' && /usr/bin/python /usr/app/tools.py --user-add {5} {6}' +
+          ' && /usr/bin/python /usr/app/tools.py --user-promote {5} 3'.format(
+              albireo_docker_tag,
+              albireo_conf,
+              albireo_sentry,
+              albireo_alembic_ini,
+              download_location,
+              default_admin_albireo,
+              default_admin_password_albireo))
+
+print('init video-manager database')
+os.system('docker run --rm ghcr.io/irohalab/mira-video-manager:{0}' +
+          ' --env-file env' +
+          ' -v {1}:/etc/mira/config.yml' +
+          ' -v {2}:/etc/mira/ormconfig.json'
+          ' $(/usr/bin/npm bin)/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
+              vm_docker_tag, video_manager_conf, video_manager_ormconf))
+
+print('init download-manager database')
+os.system('docker run --rm ghcr.io/irohalab/mira-download-manager:{0}' +
+          ' --env-file env' +
+          ' -v {1}:/etc/mira/config.yml' +
+          ' -v {2}:/etc/mira/ormconfig.json'
+          ' $(/usr/bin/npm bin)/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
+              dm_docker_tag, download_manager_conf, download_manager_ormconf))
 
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
