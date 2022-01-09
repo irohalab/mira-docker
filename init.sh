@@ -1,8 +1,10 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-python3 -m venv ./venv
+set -e
+BASEDIR=$(dirname $0)
+python3 -m venv ${BASEDIR}/venv
 
-source ./venv/bin/activate
+source ${BASEDIR}/venv/bin/activate
 
 python3 -m pip install -r requirements.txt
 
