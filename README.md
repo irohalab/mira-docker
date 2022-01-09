@@ -9,9 +9,12 @@ run in production:
 docker-compose --profile prod up -d
 
 ## Prepare docker-compose and config files:
-You can use init_helper.py to help you setup the environment and config files as well as update docker-compose.
-
-In shell run `python3 -m init_helper.py`, then you will be asked several questions.
+You can use `init.sh` to help you setup the environment and config files as well as update docker-compose.
+```bash
+$ chmod +x init.sh
+$ ./init.sh
+```
+then you will be asked several questions.
 
 Or you can also do it yourself manually.
 
