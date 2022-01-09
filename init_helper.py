@@ -296,14 +296,15 @@ with open(join(mira, 'env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
 
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
-os.system('docker run --rm ghcr.io/irohalab/albireo:{0}' +
+os.system('docker run --rm'
           ' --env-file env'
-          ' -v {1}:/usr/app/config/config.yml' +
-          ' -v {2}:/usr/app/config/sentry.yml' +
-          ' -v {3}:/usr/app/alembic.ini' +
-          ' -v {4}:/data/Albireo' +
-          ' /usr/bin/python /usr/app/tools.py --db-init' +
-          ' && /usr/bin/python /usr/app/tools.py --user-add {5} {6}' +
+          ' -v {1}:/usr/app/config/config.yml'
+          ' -v {2}:/usr/app/config/sentry.yml'
+          ' -v {3}:/usr/app/alembic.ini'
+          ' -v {4}:/data/Albireo'
+          ' ghcr.io/irohalab/albireo:{0}'
+          ' /usr/bin/python /usr/app/tools.py --db-init'
+          ' && /usr/bin/python /usr/app/tools.py --user-add {5} {6}'
           ' && /usr/bin/python /usr/app/tools.py --user-promote {5} 3'.format(
               albireo_docker_tag,
               albireo_conf,
@@ -314,19 +315,21 @@ os.system('docker run --rm ghcr.io/irohalab/albireo:{0}' +
               default_admin_password_albireo))
 
 print('init video-manager database')
-os.system('docker run --rm ghcr.io/irohalab/mira-video-manager:{0}' +
-          ' --env-file env' +
-          ' -v {1}:/etc/mira/config.yml' +
+os.system('docker run --rm'
+          ' --env-file env'
+          ' -v {1}:/etc/mira/config.yml'
           ' -v {2}:/etc/mira/ormconfig.json'
-          ' $(/usr/bin/npm bin)/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
+          ' ghcr.io/irohalab/mira-video-manager:{0}'
+          ' /app/node_modules/.bin/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
               vm_docker_tag, video_manager_conf, video_manager_ormconf))
 
 print('init download-manager database')
-os.system('docker run --rm ghcr.io/irohalab/mira-download-manager:{0}' +
-          ' --env-file env' +
-          ' -v {1}:/etc/mira/config.yml' +
+os.system('docker run --rm'
+          ' --env-file env'
+          ' -v {1}:/etc/mira/config.yml'
           ' -v {2}:/etc/mira/ormconfig.json'
-          ' $(/usr/bin/npm bin)/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
+          ' ghcr.io/irohalab/mira-download-manager:{0}'
+          ' /app/node_modules/.bin/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
               dm_docker_tag, download_manager_conf, download_manager_ormconf))
 
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
