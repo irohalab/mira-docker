@@ -1,0 +1,40 @@
+version: '3.9'
+  albireo-init:
+    image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
+    container_name: 'albireo-init'
+    profiles: [ 'init' ]
+    environment:
+      PYTHONUNBUFFERED: 1
+      EXECJS_RUNTIME: "Node"
+    volumes:
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/config.yml:/usr/app/config/config.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
+    depends_on:
+      - postgres
+
+  video-manager-init:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'video-manager-init'
+    profiles: [ 'init' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+    volumes:
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+    depends_on:
+      - postgres
+
+  download-manager-init:
+    image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
+    profiles: [ 'init' ]
+    container_name: 'download-manager-init'
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+    volumes:
+      - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${DM_CONFIG_DIR:-./download-manager/}/ormconfig.json:/etc/mira/ormconfig.json:ro
+    depends_on:
+      - postgres

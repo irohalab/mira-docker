@@ -296,40 +296,21 @@ with open(join(mira, 'env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
 
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
-os.system('docker run --rm'
-          ' --env-file env'
-          ' -v {1}:/usr/app/config/config.yml'
-          ' -v {2}:/usr/app/config/sentry.yml'
-          ' -v {3}:/usr/app/alembic.ini'
-          ' -v {4}:/data/Albireo'
-          ' ghcr.io/irohalab/albireo:{0}'
-          ' /usr/bin/python /usr/app/tools.py --db-init'
-          ' && /usr/bin/python /usr/app/tools.py --user-add {5} {6}'
-          ' && /usr/bin/python /usr/app/tools.py --user-promote {5} 3'.format(
-              albireo_docker_tag,
-              albireo_conf,
-              albireo_sentry,
-              albireo_alembic_ini,
-              download_location,
-              default_admin_albireo,
-              default_admin_password_albireo))
 
-print('init video-manager database')
-os.system('docker run --rm'
-          ' --env-file env'
-          ' -v {1}:/etc/mira/config.yml'
-          ' -v {2}:/etc/mira/ormconfig.json'
-          ' ghcr.io/irohalab/mira-video-manager:{0}'
-          ' /app/node_modules/.bin/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
-              vm_docker_tag, video_manager_conf, video_manager_ormconf))
+init_docker_compose = load_yaml('./docker-compose.init.yml')
+init_docker_compose['albireo-init']['command'] = '/usr/bin/python /usr/app/tools.py --db-init'\
+                                                 ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
+                                                 ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3'.format(
+    default_admin_albireo, default_admin_password_albireo)
 
-print('init download-manager database')
-os.system('docker run --rm'
-          ' --env-file env'
-          ' -v {1}:/etc/mira/config.yml'
-          ' -v {2}:/etc/mira/ormconfig.json'
-          ' ghcr.io/irohalab/mira-download-manager:{0}'
-          ' /app/node_modules/.bin/typeorm schema:sync -f /etc/mira/ormconfig.json'.format(
-              dm_docker_tag, download_manager_conf, download_manager_ormconf))
+init_docker_compose['video-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
+                                                       ' -f /etc/mira/ormconfig.json'
+
+init_docker_compose['download-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
+                                                          ' -f /etc/mira/ormconfig.json'
+
+write_yaml(join(home, 'docker-compose.init.yml'), init_docker_compose)
+
+os.system('docker-compose -f docker-compose.yml -f docker-compose.init.yml --profile db --profile init up')
 
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
