@@ -6,6 +6,7 @@ from os import mkdir
 from os.path import join, exists, expanduser
 from secrets import token_hex
 from shutil import copyfile
+from time import sleep
 
 from ruamel.yaml import YAML
 import configparser
@@ -114,6 +115,10 @@ default_admin_password_albireo = input('Enter the default admin user password fo
 if not default_admin_albireo:
     default_admin_albireo = 'admin'
     default_admin_password_albireo = token_hex(nbytes=16)
+
+docker_network = input('docker network for docker-compose services, (default will be mira): ')
+if not docker_network:
+    docker_network = 'mira'
 
 print('All info collected. Start to generate docker-compose and configuration files...')
 
@@ -302,6 +307,9 @@ with open(join(mira, '.env'), 'w') as env_fd:
 
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
 
+print('create docker network: ' + docker_network)
+subprocess.call()
+
 init_docker_compose = load_yaml('./docker-compose.init.yml')
 init_docker_compose['services']['albireo-init']['command'] = 'bash -c "/usr/bin/python /usr/app/tools.py --db-init'\
                                                  ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
@@ -316,15 +324,22 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
 
 write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
 
+return_code = subprocess.call('docker network create -d bridge {0}'.format(docker_network))
+if return_code != 0:
+    print('failed to create network')
+    exit(-1)
+
 postgres_proc = subprocess.Popen([
     'docker-compose', '-f', join(mira, 'docker-compose.yml'), '--profile', 'db', 'up', '-d'],
                         cwd=mira,
                         shell=True,
                         stdout=subprocess.PIPE)
 
+print('waiting for postgres ready...')
 while True:
+    sleep(5)
     return_code = subprocess.call(
-        'docker run --network mira --env-file .env postgres:12.8 pg_isready -h postgres -d albireo',
+        'docker run --rm --network mira --env-file .env postgres:12.8 pg_isready -h postgres -d albireo',
         cwd=mira,
         shell=True)
     if return_code == 0:
