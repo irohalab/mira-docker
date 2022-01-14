@@ -312,7 +312,8 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
 
 write_yaml(join(home, 'docker-compose.init.yml'), init_docker_compose)
 
-subprocess.call('docker-compose -f docker-compose.yml -f docker-compose.init.yml --profile db --profile init up',
+subprocess.call('docker-compose -f {0} -f {1} --profile db --profile init up'.format(
+    join(mira, 'docker-compose.yml'), join(mira, 'docker-compose.init.yml')),
                 cwd=mira,
                 shell=True)
 
