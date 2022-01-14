@@ -299,9 +299,9 @@ with open(join(mira, '.env'), 'w') as env_fd:
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
 
 init_docker_compose = load_yaml('./docker-compose.init.yml')
-init_docker_compose['services']['albireo-init']['command'] = '/usr/bin/python /usr/app/tools.py --db-init'\
+init_docker_compose['services']['albireo-init']['command'] = 'bash -c "/usr/bin/python /usr/app/tools.py --db-init'\
                                                  ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
-                                                 ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3'.format(
+                                                 ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3"'.format(
     default_admin_albireo, default_admin_password_albireo)
 
 init_docker_compose['services']['video-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
