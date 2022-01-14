@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 from os import mkdir
 from os.path import join, exists, expanduser
 from secrets import token_hex
@@ -95,7 +96,7 @@ db_name_albireo = input('database name for albireo (default is albireo): ')
 db_name_vm = input('database name for video manager (default is mira-video): ')
 db_name_dm = input('database name for download manager (default is mira-download): ')
 
-location_for_postgres_data = input('location for postgres data: (press ENTER to use /var/mira/data)')
+location_for_postgres_data = input('location for postgres data (press ENTER to use /var/mira/data): ')
 if not location_for_postgres_data:
     location_for_postgres_data = '/var/mira/data'
 
@@ -311,6 +312,8 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
 
 write_yaml(join(home, 'docker-compose.init.yml'), init_docker_compose)
 
-os.system('docker-compose -f docker-compose.yml -f docker-compose.init.yml --profile db --profile init up')
+subprocess.call('docker-compose -f docker-compose.yml -f docker-compose.init.yml --profile db --profile init up',
+                cwd=mira,
+                shell=True)
 
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
