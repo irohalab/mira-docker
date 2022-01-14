@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import subprocess
@@ -312,8 +313,21 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
 
 write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
 
-subprocess.call('docker-compose -f {0} -f {1} --profile db --profile init up'.format(
-    join(mira, 'docker-compose.yml'), join(mira, 'docker-compose.init.yml')),
+postgres_proc = subprocess.Popen([
+    'docker-compose', '-f', join(mira, 'docker-compose.yml'), '--profile', 'db', 'up', '-d'],
+                        cwd=mira,
+                        shell=True,
+                        stdout=subprocess.PIPE)
+
+while True:
+    return_code = subprocess.call(
+        'docker run --network mira --env-file .env postgres:12.8 pg_isready -h postgres -d albireo',
+        cwd=mira,
+        shell=True)
+    if return_code == 0:
+        break
+
+subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
                 cwd=mira,
                 shell=True)
 

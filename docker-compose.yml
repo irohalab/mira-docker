@@ -14,6 +14,8 @@ services:
     volumes:
       - ${POSTGRES_DATA:-/var/mira/data}:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - mira
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     profiles: ['prod', 'qbt']
@@ -30,6 +32,8 @@ services:
     volumes:
       - ${QBT_DOWNLOADS_LOCATION:-/data/downloads}:/downloads
       - ${QBT_CONFIG_LOCATION:-./qb/qbittorrent}:/config
+    networks:
+      - mira
   nginx:
     image: nginx:1.19
     profiles: ['prod', 'nginx']
@@ -38,3 +42,5 @@ services:
       - ${DOWNLOAD_DATA:-/data/albireo/}:/home/wwwroot/albireo:ro
       - ${NGINX_DENEB:-./web/}:/home/wwwroot/mira:ro
     restart: always
+    networks:
+      - mira

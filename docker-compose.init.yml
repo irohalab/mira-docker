@@ -11,8 +11,8 @@ services:
       - ${ALBIREO_CONFIG_DIR:-./albireo}/config.yml:/usr/app/config/config.yml:ro
       - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
       - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
-    depends_on:
-      - postgres
+    networks:
+      - mira
 
   video-manager-init:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -24,8 +24,8 @@ services:
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-    depends_on:
-      - postgres
+    networks:
+      - mira
 
   download-manager-init:
     image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
@@ -37,5 +37,5 @@ services:
     volumes:
       - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
       - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-    depends_on:
-      - postgres
+    networks:
+      - mira

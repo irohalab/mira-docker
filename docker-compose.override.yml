@@ -21,6 +21,8 @@ services:
     depends_on:
       - postgres
       - qbittorrent
+    networks:
+      - mira
 
   download-manager-server:
     image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
@@ -38,6 +40,8 @@ services:
     depends_on:
       - postgres
       - qbittorrent
+    networks:
+      - mira
 
   video-manager-job-scheduler:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -55,6 +59,8 @@ services:
     command: 'node dist/main.js'
     depends_on:
       - postgres
+    networks:
+      - mira
 
   video-manager-job-executor:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -72,6 +78,8 @@ services:
     command: 'node dist/main.js'
     depends_on:
       - postgres
+    networks:
+      - mira
 
   video-manager-api:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -87,6 +95,8 @@ services:
       - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
     restart: unless-stopped
     command: 'node dist/WebServer.js'
+    networks:
+      - mira
 
   video-manager-job-executor-file-server:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -104,6 +114,8 @@ services:
     command: 'node dist/WebServer.js'
     depends_on:
       - postgres
+    networks:
+      - mira
 
   albireo-server:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
@@ -123,6 +135,8 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+    networks:
+      - mira
 
   albireo-scheduler:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
@@ -140,3 +154,5 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+    networks:
+      - mira
