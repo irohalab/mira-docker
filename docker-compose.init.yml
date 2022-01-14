@@ -1,4 +1,5 @@
 version: '3.9'
+services:
   albireo-init:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
     container_name: 'albireo-init'
