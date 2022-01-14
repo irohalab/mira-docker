@@ -11,9 +11,9 @@ import configparser
 home = expanduser('~')
 mira = join(home, 'mira')
 
-dm_docker_tag = input('version tag of download manager image')
-vm_docker_tag = input('version tag of video manager image')
-albireo_docker_tag = input('version tag of albireo image')
+dm_docker_tag = input('version tag of download manager image: ')
+vm_docker_tag = input('version tag of video manager image: ')
+albireo_docker_tag = input('version tag of albireo image: ')
 
 default_download_manager_conf_dir = join(mira, 'download-manager')
 tip_dm_config = 'location for download-manager config files (current: {0}): '.format(default_download_manager_conf_dir)
@@ -298,15 +298,15 @@ with open(join(mira, 'env'), 'w') as env_fd:
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
 
 init_docker_compose = load_yaml('./docker-compose.init.yml')
-init_docker_compose['albireo-init']['command'] = '/usr/bin/python /usr/app/tools.py --db-init'\
+init_docker_compose['services']['albireo-init']['command'] = '/usr/bin/python /usr/app/tools.py --db-init'\
                                                  ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
                                                  ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3'.format(
     default_admin_albireo, default_admin_password_albireo)
 
-init_docker_compose['video-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
+init_docker_compose['services']['video-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
                                                        ' -f /etc/mira/ormconfig.json'
 
-init_docker_compose['download-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
+init_docker_compose['services']['download-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
                                                           ' -f /etc/mira/ormconfig.json'
 
 write_yaml(join(home, 'docker-compose.init.yml'), init_docker_compose)
