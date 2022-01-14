@@ -35,6 +35,6 @@ version: '3.9'
       ORMCONFIG: /etc/mira/ormconfig.json
     volumes:
       - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
-      - ${DM_CONFIG_DIR:-./download-manager/}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
     depends_on:
       - postgres
