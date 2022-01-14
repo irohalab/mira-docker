@@ -310,7 +310,7 @@ init_docker_compose['services']['video-manager-init']['command'] = '/app/node_mo
 init_docker_compose['services']['download-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
                                                           ' -f /etc/mira/ormconfig.json'
 
-write_yaml(join(home, 'docker-compose.init.yml'), init_docker_compose)
+write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
 
 subprocess.call('docker-compose -f {0} -f {1} --profile db --profile init up'.format(
     join(mira, 'docker-compose.yml'), join(mira, 'docker-compose.init.yml')),
