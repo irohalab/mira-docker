@@ -11,7 +11,6 @@ docker-compose --profile prod up -d
 ## Prepare docker-compose and config files:
 You can use `init.sh` to help you setup the environment and config files as well as update docker-compose.
 ```bash
-$ chmod +x init.sh
 $ ./init.sh
 ```
 then you will be asked several questions.
