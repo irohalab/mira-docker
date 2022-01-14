@@ -292,7 +292,7 @@ if use_postgres_docker == 'y':
     env_list.append('POSTGRES_DATA=' + location_for_postgres_data)
 
 
-with open(join(mira, 'env'), 'w') as env_fd:
+with open(join(mira, '.env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
 
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
