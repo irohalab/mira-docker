@@ -136,6 +136,9 @@ if not exists(nginx_conf_dir):
 if not exists(qb_conf_dir):
     mkdir(qb_conf_dir)
 
+if not exists(location_for_postgres_data):
+    os.makedirs(location_for_postgres_data)
+
 print('Copying configuration files and docker-compose files...')
 
 download_manager_conf = join(download_manager_conf_dir, 'config.yml')
