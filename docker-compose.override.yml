@@ -156,3 +156,8 @@ services:
       - postgres
     networks:
       - mira
+
+networks:
+  mira:
+    external: true
+    name: mira

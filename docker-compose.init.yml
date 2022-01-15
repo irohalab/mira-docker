@@ -39,3 +39,8 @@ services:
       - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
     networks:
       - mira
+
+networks:
+  mira:
+    external: true
+    name: mira

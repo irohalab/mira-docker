@@ -44,3 +44,8 @@ services:
     restart: always
     networks:
       - mira
+
+networks:
+  mira:
+    external: true
+    name: mira

@@ -307,6 +307,15 @@ with open(join(mira, '.env'), 'w') as env_fd:
 
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
 
+if docker_network != 'mira':
+    docker_compose_dict = load_yaml(join(mira, 'docker-compose.yml'))
+    docker_compose_dict['networks']['mira']['name'] = docker_network
+    write_yaml(join(mira, 'docker-compose.yml'), docker_compose_dict)
+
+    docker_compose_override_dict = load_yaml(join(mira, 'docker-compose.override.yml'))
+    docker_compose_override_dict['networks']['mira']['name'] = docker_network
+    write_yaml(join(mira, 'docker-compose.override.yml'), docker_compose_dict)
+
 init_docker_compose = load_yaml('./docker-compose.init.yml')
 init_docker_compose['services']['albireo-init']['command'] = 'bash -c "/usr/bin/python /usr/app/tools.py --db-init'\
                                                  ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
@@ -318,6 +327,8 @@ init_docker_compose['services']['video-manager-init']['command'] = '/app/node_mo
 
 init_docker_compose['services']['download-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
                                                           ' -f /etc/mira/ormconfig.json'
+if docker_network != 'mira':
+    init_docker_compose['networks']['mira']['name'] = docker_network
 
 write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
 
