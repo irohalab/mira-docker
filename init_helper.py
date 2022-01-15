@@ -347,8 +347,8 @@ print('waiting for postgres ready...')
 while True:
     sleep(5)
     return_code = subprocess.call(
-        'docker run --rm --network {0} --env-file .env postgres:12.8 pg_isready -h postgres -d {1}'.format(
-            docker_network, db_name_albireo),
+        'docker run --rm --network {0} --env-file .env postgres:12.8 pg_isready -h {1} -p {2}'.format(
+            docker_network, postgres_host, postgres_port),
         cwd=mira,
         shell=True)
     if return_code == 0:
