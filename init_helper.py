@@ -331,8 +331,7 @@ if return_code != 0:
 postgres_proc = subprocess.Popen([
     'docker-compose', '-f', join(mira, 'docker-compose.yml'), '--profile', 'db', 'up', '-d'],
                         cwd=mira,
-                        shell=True,
-                        stdout=subprocess.PIPE)
+                        shell=True)
 
 print('waiting for postgres ready...')
 while True:
@@ -348,4 +347,5 @@ subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'doc
                 cwd=mira,
                 shell=True)
 
+postgres_proc.terminate()
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
