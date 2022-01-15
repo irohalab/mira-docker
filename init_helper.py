@@ -356,18 +356,23 @@ while True:
 
 
 print('create databases...')
+
 return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 '
-                              'psql -h {1} -p {2} -U {3} -W {4} -c "CREATE DATABASE {5} ENCODING UTF8" '
+                              'psql -d postgres://{1}:{2}@{3}:{4}/postgres -c "CREATE DATABASE {5} ENCODING UTF8" '
                               '-c "CREATE DATABASE {6} ENCODING UTF8" '
                               '-c "CREATE DATABASE {7} ENCODING UTF8"'.format(
                                 docker_network,
-                                postgres_host,
-                                postgres_port,
                                 postgres_user,
                                 postgres_password,
+                                postgres_host,
+                                postgres_port,
                                 db_name_albireo,
                                 db_name_vm,
                                 db_name_dm), cwd=mira, shell=True)
+
+if return_code != 0:
+    print('failed to create databases')
+    exit(-1)
 
 subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
                 cwd=mira,
@@ -375,6 +380,10 @@ subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'doc
 
 
 subprocess.call('docker-compose -f {0} --profile db down'.format(join(mira, 'docker-compose.yml')), cwd=mira,
+                shell=True)
+
+subprocess.call('docker-compose -f {0} --profile init down'.format(join(mira, 'docker-compose.init.yml')),
+                cwd=mira,
                 shell=True)
 
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
