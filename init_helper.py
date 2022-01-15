@@ -324,7 +324,7 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
 
 write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
 
-return_code = subprocess.call('docker network create -d bridge {0}'.format(docker_network))
+return_code = subprocess.call('docker network create -d bridge {0}'.format(docker_network), shell=True)
 if return_code != 0:
     print('failed to create network')
     exit(-1)
