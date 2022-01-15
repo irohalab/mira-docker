@@ -95,14 +95,14 @@ if not postgres_password:
     postgres_password = token_hex(nbytes=16)
 
 db_name_albireo = input('database name for albireo (default is albireo): ')
-db_name_vm = input('database name for video manager (default is mira-video): ')
-db_name_dm = input('database name for download manager (default is mira-download): ')
+db_name_vm = input('database name for video manager (default is mira_video): ')
+db_name_dm = input('database name for download manager (default is mira_download): ')
 if not db_name_albireo:
     db_name_albireo = 'albireo'
 if not db_name_vm:
-    db_name_vm = 'mira-video'
+    db_name_vm = 'mira_video'
 if not db_name_dm:
-    db_name_dm = 'mira-download'
+    db_name_dm = 'mira_download'
 
 location_for_postgres_data = input('location for postgres data (press ENTER to use /data/postgres): ')
 if not location_for_postgres_data:
@@ -125,6 +125,12 @@ if not default_admin_albireo:
 docker_network = input('docker network for docker-compose services, (default will be mira): ')
 if not docker_network:
     docker_network = 'mira'
+
+init_albireo_db = None
+while init_albireo_db != 'y' and init_albireo_db != 'n':
+    init_albireo_db = input('Do you want to initialize albireo database, '
+                            'in case you are migrating from the old Albireo, '
+                            'select no (y for yes, n for n): ')
 
 print('All info collected. Start to generate docker-compose and configuration files...')
 
@@ -323,10 +329,13 @@ if docker_network != 'mira':
     write_yaml(join(mira, 'docker-compose.override.yml'), docker_compose_dict)
 
 init_docker_compose = load_yaml('./docker-compose.init.yml')
-init_docker_compose['services']['albireo-init']['command'] = 'bash -c "/usr/bin/python /usr/app/tools.py --db-init'\
-                                                 ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
-                                                 ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3"'.format(
-    default_admin_albireo, default_admin_password_albireo)
+if init_albireo_db == 'n':
+    del init_docker_compose['services']['albireo-init']
+else:
+    init_docker_compose['services']['albireo-init']['command'] = 'bash -c "/usr/bin/python /usr/app/tools.py --db-init'\
+                                                     ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
+                                                     ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3"'.\
+                                                     format(default_admin_albireo, default_admin_password_albireo)
 
 init_docker_compose['services']['video-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
                                                        ' -f /etc/mira/ormconfig.json'
@@ -363,18 +372,18 @@ while True:
 
 print('create databases...')
 
-return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 '
-                              'psql -d postgres://{1}:{2}@{3}:{4}/postgres -c "CREATE DATABASE {5} ENCODING UTF8;" '
-                              '-c "CREATE DATABASE {6} ENCODING UTF8;" '
-                              '-c "CREATE DATABASE {7} ENCODING UTF8;"'.format(
-                                docker_network,
-                                postgres_user,
-                                postgres_password,
-                                postgres_host,
-                                postgres_port,
-                                db_name_albireo,
-                                db_name_vm,
-                                db_name_dm), cwd=mira, shell=True)
+psql_statement = 'psql -d postgres://{0}:{1}@{2}:{3}/postgres -c "CREATE DATABASE \'{4}\' ENCODING UTF8;" '\
+                 '-c "CREATE DATABASE \'{5}\' ENCODING UTF8;"'.format(postgres_user,
+                                                                      postgres_password,
+                                                                      postgres_host,
+                                                                      postgres_port,
+                                                                      db_name_vm,
+                                                                      db_name_dm)
+if init_albireo_db == 'y':
+    psql_statement = psql_statement + ' -c "CREATE DATABASE \'{0}\' ENCODING UTF8;"'.format(db_name_albireo)
+
+return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 {1}'.format(
+                                docker_network, psql_statement), cwd=mira, shell=True)
 
 if return_code != 0:
     print('failed to create databases')
