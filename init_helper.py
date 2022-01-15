@@ -97,6 +97,12 @@ if not postgres_password:
 db_name_albireo = input('database name for albireo (default is albireo): ')
 db_name_vm = input('database name for video manager (default is mira-video): ')
 db_name_dm = input('database name for download manager (default is mira-download): ')
+if not db_name_albireo:
+    db_name_albireo = 'albireo'
+if not db_name_vm:
+    db_name_vm = 'mira-video'
+if not db_name_dm:
+    db_name_dm = 'mira-download'
 
 location_for_postgres_data = input('location for postgres data (press ENTER to use /data/postgres): ')
 if not location_for_postgres_data:
@@ -358,9 +364,9 @@ while True:
 print('create databases...')
 
 return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 '
-                              'psql -d postgres://{1}:{2}@{3}:{4}/postgres -c "CREATE DATABASE {5} ENCODING UTF8" '
-                              '-c "CREATE DATABASE {6} ENCODING UTF8" '
-                              '-c "CREATE DATABASE {7} ENCODING UTF8"'.format(
+                              'psql -d postgres://{1}:{2}@{3}:{4}/postgres -c "CREATE DATABASE {5} ENCODING UTF8;" '
+                              '-c "CREATE DATABASE {6} ENCODING UTF8;" '
+                              '-c "CREATE DATABASE {7} ENCODING UTF8;"'.format(
                                 docker_network,
                                 postgres_user,
                                 postgres_password,
