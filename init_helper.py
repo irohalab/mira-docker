@@ -328,10 +328,8 @@ if return_code != 0:
     print('failed to create network')
     exit(-1)
 
-postgres_proc = subprocess.Popen([
-    'docker-compose', '-f', join(mira, 'docker-compose.yml'), '--profile', 'db', 'up', '-d'],
-                        cwd=mira,
-                        shell=True)
+postgres_proc = subprocess.Popen('docker-compose -f {0} --profile db up -d'.format(join(mira, 'docker-compose.yml')),
+                                 cwd=mira, shell=True)
 
 print('waiting for postgres ready...')
 while True:
