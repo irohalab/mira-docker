@@ -356,7 +356,7 @@ while True:
 
 
 print('create databases...')
-return_code = subprocess.call('docker run --rm network {0} --env-file .env postgres:12.8 '
+return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 '
                               'psql -h {1} -p {2} -U {3} -W {4} -c "CREATE DATABASE {5} ENCODING UTF8" '
                               '-c "CREATE DATABASE {6} ENCODING UTF8" '
                               '-c "CREATE DATABASE {7} ENCODING UTF8"'.format(
