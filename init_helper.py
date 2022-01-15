@@ -8,43 +8,49 @@ from secrets import token_hex
 from shutil import copyfile
 from time import sleep
 
+from colored import fg, bg, attr
 from ruamel.yaml import YAML
 import configparser
+
+
+def prompt(desc):
+    return input(fg('wheat_1') + desc + attr('rest'))
+
 
 home = expanduser('~')
 mira = join(home, 'mira')
 
-dm_docker_tag = input('version tag of download manager image: ')
-vm_docker_tag = input('version tag of video manager image: ')
-albireo_docker_tag = input('version tag of albireo image: ')
+dm_docker_tag = prompt('version tag of download manager image: ')
+vm_docker_tag = prompt('version tag of video manager image: ')
+albireo_docker_tag = prompt('version tag of albireo image: ')
 
 default_download_manager_conf_dir = join(mira, 'download-manager')
 tip_dm_config = 'location for download-manager config files (current: {0}): '.format(default_download_manager_conf_dir)
-download_manager_conf_dir = input(tip_dm_config)
+download_manager_conf_dir = prompt(tip_dm_config)
 if not download_manager_conf_dir:
     download_manager_conf_dir = default_download_manager_conf_dir
 
 default_video_manager_conf_dir = join(mira, 'video-manager')
 tip_vm_config = 'location for video-manager config files (current: {0}): '.format(default_video_manager_conf_dir)
-video_manager_conf_dir = input(tip_vm_config)
+video_manager_conf_dir = prompt(tip_vm_config)
 if not video_manager_conf_dir:
     video_manager_conf_dir = default_video_manager_conf_dir
 
 default_albireo_conf_dir = join(mira, 'albireo')
 tip_albireo_config = 'location for albireo config files (current: {0}): '.format(default_albireo_conf_dir)
-albireo_conf_dir = input(tip_albireo_config)
+albireo_conf_dir = prompt(tip_albireo_config)
 if not albireo_conf_dir:
     albireo_conf_dir = default_albireo_conf_dir
 
 default_nginx_conf_dir = join(mira, 'nginx')
 tip_nginx_config = 'location for nginx config files (current: {0}): '.format(default_nginx_conf_dir)
-nginx_conf_dir = input(tip_nginx_config)
+nginx_conf_dir = prompt(tip_nginx_config)
 if not nginx_conf_dir:
     nginx_conf_dir = default_nginx_conf_dir
 
 default_qb_conf_dir = join(mira, 'qb')
 tip_qb_config = 'location for qBittorrent config files (current: {0}): '.format(default_qb_conf_dir)
-qb_conf_dir = input(tip_qb_config)
+qb_conf_dir = prompt(tip_qb_config)
 if not qb_conf_dir:
     qb_conf_dir = default_qb_conf_dir
 
@@ -53,15 +59,15 @@ print('1. amqp url')
 print('2. amqp object')
 amqp_selector = None
 while amqp_selector != '1' and amqp_selector != '2':
-    amqp_selector = input('Please Enter 1 or 2: ')
+    amqp_selector = prompt('Please Enter 1 or 2: ')
 
 if amqp_selector == '1':
     amqp_url = input('You select use amqp url. Please enter amqp url: ')
 else:
     amqp_host = input('You select use amqp config object, Please enter amqp host: ')
-    amqp_port = input('amqp server port: ')
-    amqp_user = input('amqp user: ')
-    amqp_password = input('amqp password: ')
+    amqp_port = prompt('amqp server port: ')
+    amqp_user = prompt('amqp user: ')
+    amqp_password = prompt('amqp password: ')
 
 print('enter login credentials to connect qbittorrent daemon')
 qb_user = input('qbittorrent username (press enter to use admin: ')
@@ -83,8 +89,8 @@ while use_postgres_docker != 'y' and use_postgres_docker != 'n':
 postgres_host = 'postgres'
 postgres_port = 5432
 if use_postgres_docker == 'n':
-    postgres_host = input('Please enter your postgres server host: ')
-    postgres_port = int(input('Please enter your postgres server port: '))
+    postgres_host = prompt('Please enter your postgres server host: ')
+    postgres_port = int(prompt('Please enter your postgres server port: '))
 
 postgres_user = input('username for postgres (press ENTER to use postgres): ')
 if not postgres_user:
@@ -132,9 +138,9 @@ while init_albireo_db != 'y' and init_albireo_db != 'n':
                             'in case you are migrating from the old Albireo, '
                             'select no (y for yes, n for n): ')
 
-print('All info collected. Start to generate docker-compose and configuration files...')
+print(fg('chartreuse_2a') + 'All info collected. Start to generate docker-compose and configuration files...' + attr('reset'))
 
-print('Creating folders for configuration files...')
+print(fg(33) + 'Creating folders for configuration files...' + attr('reset'))
 if not exists(mira):
     mkdir(mira)
 
@@ -156,7 +162,7 @@ if not exists(qb_conf_dir):
 if not exists(location_for_postgres_data):
     os.makedirs(location_for_postgres_data)
 
-print('Copying configuration files and docker-compose files...')
+print(fg(33) + 'Copying configuration files and docker-compose files...' + attr('reset'))
 
 download_manager_conf = join(download_manager_conf_dir, 'config.yml')
 download_manager_ormconf = join(download_manager_conf_dir, 'ormconfig.json')
@@ -219,7 +225,7 @@ def enable_https_on_url(url_str):
     return url_str.replace('http://', 'https://')
 
 
-print('Updating configurations...')
+print(fg(33) + 'Updating configurations...' + attr('reset'))
 
 # Update download-manager/config.yml
 
@@ -293,7 +299,7 @@ alembic_conf_dict['alembic']['sqlalchemy.url'] = 'postgresql://{0}:{1}@{2}:{3}/{
 with open(albireo_alembic_ini, 'w') as alembic_conf_fd:
     alembic_conf_dict.write(alembic_conf_fd)
 
-print('Generating environment variables file: {0}/env'.format(mira))
+print(fg(33) + 'Generating environment variables file: {0}/env'.format(mira) + attr('reset'))
 
 env_list = [
     'DM_CONFIG_DIR=' + download_manager_conf_dir,
@@ -317,7 +323,7 @@ if use_postgres_docker == 'y':
 with open(join(mira, '.env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
 
-print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
+print(fg(33) + 'init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo) + attr('reset'))
 
 if docker_network != 'mira':
     docker_compose_dict = load_yaml(join(mira, 'docker-compose.yml'))
@@ -347,18 +353,18 @@ if docker_network != 'mira':
 
 write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
 
-print('create docker network: ' + docker_network)
+print(fg(33) + 'create docker network: ' + docker_network + attr('reset'))
 
 return_code = subprocess.call('docker network create -d bridge {0}'.format(docker_network), shell=True)
 if return_code != 0:
-    print('failed to create network')
+    print(fg(203) + 'failed to create network' + attr('reset'))
     exit(-1)
 
 if use_postgres_docker:
     subprocess.call('docker-compose -f {0} --profile db up -d'.format(join(mira, 'docker-compose.yml')), cwd=mira,
                     shell=True)
 
-print('waiting for postgres ready...')
+print(fg(159) + 'waiting for postgres ready...' + attr('reset'))
 while True:
     sleep(5)
     return_code = subprocess.call(
@@ -370,7 +376,7 @@ while True:
         break
 
 
-print('create databases...')
+print(fg(33) + 'create databases...' + attr('reset'))
 
 psql_statement = 'psql -d postgres://{0}:{1}@{2}:{3}/postgres -c \'CREATE DATABASE "{4}" ENCODING UTF8;\' '\
                  '-c \'CREATE DATABASE "{5}" ENCODING UTF8;\''.format(postgres_user,
@@ -386,7 +392,7 @@ return_code = subprocess.call('docker run --rm --network {0} --env-file .env pos
                                 docker_network, psql_statement), cwd=mira, shell=True)
 
 if return_code != 0:
-    print('failed to create databases')
+    print(fg(203) + 'failed to create databases' + attr('reset'))
     exit(-1)
 
 subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
@@ -401,4 +407,6 @@ subprocess.call('docker-compose -f {0} --profile init down'.format(join(mira, 'd
                 cwd=mira,
                 shell=True)
 
-print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
+print(fg('chartreuse_2a') +
+      'All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name' +
+      attr('reset'))
