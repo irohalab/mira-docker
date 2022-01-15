@@ -372,15 +372,15 @@ while True:
 
 print('create databases...')
 
-psql_statement = 'psql -d postgres://{0}:{1}@{2}:{3}/postgres -c "CREATE DATABASE \'{4}\' ENCODING UTF8;" '\
-                 '-c "CREATE DATABASE \'{5}\' ENCODING UTF8;"'.format(postgres_user,
+psql_statement = 'psql -d postgres://{0}:{1}@{2}:{3}/postgres -c \'CREATE DATABASE "{4}" ENCODING UTF8;\' '\
+                 '-c \'CREATE DATABASE "{5}" ENCODING UTF8;\''.format(postgres_user,
                                                                       postgres_password,
                                                                       postgres_host,
                                                                       postgres_port,
                                                                       db_name_vm,
                                                                       db_name_dm)
 if init_albireo_db == 'y':
-    psql_statement = psql_statement + ' -c "CREATE DATABASE \'{0}\' ENCODING UTF8;"'.format(db_name_albireo)
+    psql_statement = psql_statement + ' -c \'CREATE DATABASE "{0}" ENCODING UTF8;\''.format(db_name_albireo)
 
 return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 {1}'.format(
                                 docker_network, psql_statement), cwd=mira, shell=True)
