@@ -286,7 +286,7 @@ alembic_conf_dict.read(albireo_alembic_ini)
 if use_postgres_docker == 'y':
     postgres_host = 'postgres'
     postgres_port = 5432
-alembic_conf_dict['alembic']['sqlalchemy.url'] = 'postgres://{0}:{1}@{2}:{3}/{4}'.format(
+alembic_conf_dict['alembic']['sqlalchemy.url'] = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
     postgres_user, postgres_password, postgres_host, postgres_port, albireo_conf_dict['database']['database']
 )
 
