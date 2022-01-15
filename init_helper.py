@@ -339,22 +339,42 @@ if return_code != 0:
     print('failed to create network')
     exit(-1)
 
-postgres_proc = subprocess.Popen('docker-compose -f {0} --profile db up -d'.format(join(mira, 'docker-compose.yml')),
-                                 cwd=mira, shell=True)
+if use_postgres_docker:
+    subprocess.call('docker-compose -f {0} --profile db up -d'.format(join(mira, 'docker-compose.yml')), cwd=mira,
+                    shell=True)
 
 print('waiting for postgres ready...')
 while True:
     sleep(5)
     return_code = subprocess.call(
-        'docker run --rm --network mira --env-file .env postgres:12.8 pg_isready -h postgres -d albireo',
+        'docker run --rm --network {0} --env-file .env postgres:12.8 pg_isready -h postgres -d {1}'.format(
+            docker_network, db_name_albireo),
         cwd=mira,
         shell=True)
     if return_code == 0:
         break
 
+
+print('create databases...')
+return_code = subprocess.call('docker run --rm network {0} --env-file .env postgres:12.8 '
+                              'psql -h {1} -p {2} -U {3} -W {4} -c "CREATE DATABASE {5} ENCODING UTF8" '
+                              '-c "CREATE DATABASE {6} ENCODING UTF8" '
+                              '-c "CREATE DATABASE {7} ENCODING UTF8"'.format(
+                                docker_network,
+                                postgres_host,
+                                postgres_port,
+                                postgres_user,
+                                postgres_password,
+                                db_name_albireo,
+                                db_name_vm,
+                                db_name_dm))
+
 subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
                 cwd=mira,
                 shell=True)
 
-postgres_proc.terminate()
+
+subprocess.call('docker-compose -f {0} --profile db down'.format(join(mira, 'docker-compose.yml')), cwd=mira,
+                shell=True)
+
 print('All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name')
