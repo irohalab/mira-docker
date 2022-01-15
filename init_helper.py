@@ -14,7 +14,7 @@ import configparser
 
 
 def prompt(desc):
-    return input(fg('wheat_1') + desc + attr('rest'))
+    return input(fg('wheat_1') + desc + attr('reset'))
 
 
 home = expanduser('~')
