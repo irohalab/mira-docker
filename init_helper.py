@@ -307,9 +307,6 @@ with open(join(mira, '.env'), 'w') as env_fd:
 
 print('init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo))
 
-print('create docker network: ' + docker_network)
-subprocess.call()
-
 init_docker_compose = load_yaml('./docker-compose.init.yml')
 init_docker_compose['services']['albireo-init']['command'] = 'bash -c "/usr/bin/python /usr/app/tools.py --db-init'\
                                                  ' && /usr/bin/python /usr/app/tools.py --user-add {0} {1}'\
@@ -323,6 +320,8 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
                                                           ' -f /etc/mira/ormconfig.json'
 
 write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
+
+print('create docker network: ' + docker_network)
 
 return_code = subprocess.call('docker network create -d bridge {0}'.format(docker_network), shell=True)
 if return_code != 0:
