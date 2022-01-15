@@ -98,9 +98,9 @@ db_name_albireo = input('database name for albireo (default is albireo): ')
 db_name_vm = input('database name for video manager (default is mira-video): ')
 db_name_dm = input('database name for download manager (default is mira-download): ')
 
-location_for_postgres_data = input('location for postgres data (press ENTER to use /var/mira/data): ')
+location_for_postgres_data = input('location for postgres data (press ENTER to use /data/postgres): ')
 if not location_for_postgres_data:
-    location_for_postgres_data = '/var/mira/data'
+    location_for_postgres_data = '/data/postgres'
 
 dm_enable_https = None
 while dm_enable_https != 'y' and dm_enable_https != 'n':
