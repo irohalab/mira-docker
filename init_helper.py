@@ -367,7 +367,7 @@ return_code = subprocess.call('docker run --rm network {0} --env-file .env postg
                                 postgres_password,
                                 db_name_albireo,
                                 db_name_vm,
-                                db_name_dm))
+                                db_name_dm), cwd=mira, shell=True)
 
 subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
                 cwd=mira,
