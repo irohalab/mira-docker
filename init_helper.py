@@ -62,29 +62,29 @@ while amqp_selector != '1' and amqp_selector != '2':
     amqp_selector = prompt('Please Enter 1 or 2: ')
 
 if amqp_selector == '1':
-    amqp_url = input('You select use amqp url. Please enter amqp url: ')
+    amqp_url = prompt('You select use amqp url. Please enter amqp url: ')
 else:
-    amqp_host = input('You select use amqp config object, Please enter amqp host: ')
+    amqp_host = prompt('You select use amqp config object, Please enter amqp host: ')
     amqp_port = prompt('amqp server port: ')
     amqp_user = prompt('amqp user: ')
     amqp_password = prompt('amqp password: ')
 
 print('enter login credentials to connect qbittorrent daemon')
-qb_user = input('qbittorrent username (press enter to use admin: ')
+qb_user = prompt('qbittorrent username (press enter to use admin: ')
 if not qb_user:
     qb_user = 'admin'
 
-qb_password = input('qbittorent password (press enter to generate a random one): ')
+qb_password = prompt('qbittorent password (press enter to generate a random one): ')
 if not qb_password:
     qb_password = token_hex(nbytes=16)
 
-download_location = input('data path for albireo, default is /data/albireo: ')
+download_location = prompt('data path for albireo, default is /data/albireo: ')
 if not download_location:
     download_location = '/data/albireo'
 
 use_postgres_docker = None
 while use_postgres_docker != 'y' and use_postgres_docker != 'n':
-    use_postgres_docker = input('Do you want to use the postgres service in the docker-compos file? y for yes, n for no: ')
+    use_postgres_docker = prompt('Do you want to use the postgres service in the docker-compos file? y for yes, n for no: ')
 
 postgres_host = 'postgres'
 postgres_port = 5432
@@ -92,17 +92,17 @@ if use_postgres_docker == 'n':
     postgres_host = prompt('Please enter your postgres server host: ')
     postgres_port = int(prompt('Please enter your postgres server port: '))
 
-postgres_user = input('username for postgres (press ENTER to use postgres): ')
+postgres_user = prompt('username for postgres (press ENTER to use postgres): ')
 if not postgres_user:
     postgres_user = 'postgres'
 
-postgres_password = input('password for postgres (press ENTER to use randomly generated password): ')
+postgres_password = prompt('password for postgres (press ENTER to use randomly generated password): ')
 if not postgres_password:
     postgres_password = token_hex(nbytes=16)
 
-db_name_albireo = input('database name for albireo (default is albireo): ')
-db_name_vm = input('database name for video manager (default is mira_video): ')
-db_name_dm = input('database name for download manager (default is mira_download): ')
+db_name_albireo = prompt('database name for albireo (default is albireo): ')
+db_name_vm = prompt('database name for video manager (default is mira_video): ')
+db_name_dm = prompt('database name for download manager (default is mira_download): ')
 if not db_name_albireo:
     db_name_albireo = 'albireo'
 if not db_name_vm:
@@ -110,31 +110,31 @@ if not db_name_vm:
 if not db_name_dm:
     db_name_dm = 'mira_download'
 
-location_for_postgres_data = input('location for postgres data (press ENTER to use /data/postgres): ')
+location_for_postgres_data = prompt('location for postgres data (press ENTER to use /data/postgres): ')
 if not location_for_postgres_data:
     location_for_postgres_data = '/data/postgres'
 
 dm_enable_https = None
 while dm_enable_https != 'y' and dm_enable_https != 'n':
-    dm_enable_https = input('Enable https for download manager server? y for yes, n for no: ')
+    dm_enable_https = prompt('Enable https for download manager server? y for yes, n for no: ')
 
 vm_enable_https = None
 while vm_enable_https != 'y' and vm_enable_https != 'n':
-    vm_enable_https = input('Enable https for video manager server? y for yes, n for no: ')
+    vm_enable_https = prompt('Enable https for video manager server? y for yes, n for no: ')
 
-default_admin_albireo = input('Enter the default admin user for albireo (Enter to use admin): ')
-default_admin_password_albireo = input('Enter the default admin user password for albireo (Enter to use generated password): ')
+default_admin_albireo = prompt('Enter the default admin user for albireo (Enter to use admin): ')
+default_admin_password_albireo = prompt('Enter the default admin user password for albireo (Enter to use generated password): ')
 if not default_admin_albireo:
     default_admin_albireo = 'admin'
     default_admin_password_albireo = token_hex(nbytes=16)
 
-docker_network = input('docker network for docker-compose services, (default will be mira): ')
+docker_network = prompt('docker network for docker-compose services, (default will be mira): ')
 if not docker_network:
     docker_network = 'mira'
 
 init_albireo_db = None
 while init_albireo_db != 'y' and init_albireo_db != 'n':
-    init_albireo_db = input('Do you want to initialize albireo database, '
+    init_albireo_db = prompt('Do you want to initialize albireo database, '
                             'in case you are migrating from the old Albireo, '
                             'select no (y for yes, n for n): ')
 
