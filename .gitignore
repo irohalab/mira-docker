@@ -3,3 +3,4 @@ venv
 .vs
 web/env
 web/config.json
+.config.json
