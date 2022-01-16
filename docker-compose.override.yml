@@ -14,7 +14,7 @@ services:
       ORMCONFIG: /etc/mira/ormconfig.json
     volumes:
       - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
-      - ${DM_CONFIG_DIR:-./download-manager/}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
       - ${DOWNLOAD_DATA:-/data/albireo}:/data/download
     restart: unless-stopped
     command: 'node dist/main.js'
@@ -131,7 +131,7 @@ services:
       - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
       - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
       - ${DOWNLOAD_DATA:-/data/albireo}:/data/Albireo:rw
-    command: 'twistd -n --pidfile= web --port 5000 -wsgi appd.app'
+    command: 'twistd -n --pidfile= web --port 5000 --wsgi appd.app'
     restart: unless-stopped
     depends_on:
       - postgres
