@@ -1,5 +1,3 @@
-import io
-import json
 import os
 import subprocess
 from os import mkdir
@@ -8,13 +6,9 @@ from secrets import token_hex
 from shutil import copyfile
 from time import sleep
 
-from colored import fg, bg, attr
-from ruamel.yaml import YAML
+from colored import fg, attr
 import configparser
-
-
-def prompt(desc):
-    return input(fg('wheat_1') + desc + attr('reset'))
+from lib.utils import prompt, load_yaml, load_json, write_yaml, write_json
 
 
 home = expanduser('~')
@@ -197,28 +191,6 @@ def update_amqp(conf_dict):
         conf_dict['amqp']['port'] = amqp_port
         conf_dict['amqp']['user'] = amqp_user
         conf_dict['amqp']['password'] = amqp_password
-
-
-def load_yaml(conf_path):
-    yaml = YAML()
-    with open(conf_path) as fd:
-        return yaml.load(fd)
-
-
-def write_yaml(conf_path, conf_dict):
-    yaml = YAML()
-    fd = open(conf_path, 'w')
-    yaml.dump(conf_dict, fd)
-
-
-def load_json(conf_path):
-    fd = open(conf_path)
-    return json.load(fd)
-
-
-def write_json(conf_path, conf_dict):
-    fd = open(conf_path, 'w')
-    json.dump(conf_dict, fd, indent=2)
 
 
 def enable_https_on_url(url_str):
