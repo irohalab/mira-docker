@@ -1,7 +1,7 @@
 import subprocess
-from os import rmdir, mkdir
-from os.path import join, expanduser
-from shutil import copytree
+from os import mkdir
+from os.path import join, expanduser, exists
+from shutil import copytree, rmtree
 
 from colored import fg, attr
 from lib.utils import config_path, config_dict, prompt, write_json
@@ -9,9 +9,12 @@ from lib.utils import config_path, config_dict, prompt, write_json
 home = expanduser('~')
 mira = join(home, 'mira')
 
-print(fg(111) + 'clean tmp folder' + attr('reset'))
-rmdir('./web/build')
-mkdir('./web/build')
+tmp_folder = './web/build'
+
+if exists(tmp_folder):
+    print(fg(111) + 'clean tmp folder' + attr('reset'))
+    rmtree(tmp_folder, ignore_errors=True)
+mkdir(tmp_folder)
 
 target_folder = config_dict.get('target_folder')
 if not target_folder:
@@ -62,7 +65,7 @@ if use_tag == 'y':
 else:
     print(fg(154) + 'You choose not use tag, will checkout master branch' + attr('reset'))
 
-cmd_base = 'docker run --rm -v {0}:/build'.format('./web/build')
+cmd_base = 'docker run --rm -v {0}:/build'.format(tmp_folder)
 if config_dict.get('web') is not None:
     env_list = []
     for key in config_dict.get('web'):
@@ -78,6 +81,6 @@ if return_code != 0:
     print(fg(9) + 'build failed!' + attr('reset'))
     exit(-1)
 
-copytree('./web/build', web_folder)
+copytree(tmp_folder, web_folder)
 
 print('All done! built files is copied to ' + web_folder)
