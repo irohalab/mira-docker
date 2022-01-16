@@ -1,5 +1,7 @@
 import subprocess
+from os import rmdir, mkdir
 from os.path import join, expanduser
+from shutil import copytree
 
 from colored import fg, attr
 from lib.utils import config_path, config_dict, prompt, write_json
@@ -7,6 +9,9 @@ from lib.utils import config_path, config_dict, prompt, write_json
 home = expanduser('~')
 mira = join(home, 'mira')
 
+print(fg(111) + 'clean tmp folder' + attr('reset'))
+rmdir('./web/build')
+mkdir('./web/build')
 
 target_folder = config_dict.get('target_folder')
 if not target_folder:
@@ -57,14 +62,22 @@ if use_tag == 'y':
 else:
     print(fg(154) + 'You choose not use tag, will checkout master branch' + attr('reset'))
 
-cmd_base = 'docker run --rm -v {0}:/dist'.format(web_folder)
+cmd_base = 'docker run --rm -v {0}:/build'.format('./web/build')
 if config_dict.get('web') is not None:
     env_list = []
     for key in config_dict.get('web'):
         env_list.append('--env {0}={1}'.format(key, config_dict['web'][key]))
     cmd_base = cmd_base + ' ' + ' '.join(env_list)
-cmd = cmd_base + ' node:17 bash -c \'git clone https://github.com/irohalab/Deneb.git Deneb && cd Deneb && '
+cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/irohalab/Deneb.git Deneb && cd Deneb && '
 if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
-cmd = cmd + 'yarn install && npm run build:aot:prod && cp -nr ./dist/* /dist/\''
-subprocess.call(cmd, shell=True, cwd=target_folder)
+cmd = cmd + 'yarn install && npm run build:aot:prod\''
+return_code = subprocess.call(cmd, shell=True, cwd=target_folder)
+
+if return_code != 0:
+    print(fg(9) + 'build failed!' + attr('reset'))
+    exit(-1)
+
+copytree('./web/build', web_folder)
+
+print('All done! built files is copied to ' + web_folder)

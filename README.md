@@ -18,5 +18,13 @@ then you will be asked several questions.
 Or you can also do it yourself manually.
 
 After generate the config and docker-compose. you should also download and buid your Deneb project
+
+## Build Deneb:
+in the mira-docker directory. run the script
+```bash
+$ ./build.sh
+```
+Then you will be prompted for several questions. After build complete, built files will be copied to <target folder>/web
+
 from irohalab/Deneb repo. then copy the content of dist folder to your NGINX_DENEB defined location
 Then you should update the site section and domain section of albireo/config.yml file and nginx.conf to use your domain
