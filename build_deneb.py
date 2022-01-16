@@ -16,7 +16,7 @@ if not target_folder:
 
 web_folder = config_dict.get('web_folder')
 if not web_folder:
-    web_folder = (target_folder, 'web')
+    web_folder = join(target_folder, 'web')
     print(fg(10) + 'web_folder not found, web_folder set to ' + web_folder + attr('reset'))
 
 
