@@ -132,14 +132,6 @@ while init_albireo_db != 'y' and init_albireo_db != 'n':
                             'in case you are migrating from the old Albireo, '
                             'select no (y for yes, n for n): ')
 
-use_sentry = None
-while use_sentry != 'y' and use_sentry != 'n':
-    use_sentry = prompt('Do you want to use sentry for collecting exception and logs? (y for yes, n for no): ')
-
-sentry_dsn = None
-if use_sentry == 'y':
-    sentry_dsn = prompt('Please enter your sentry DSN: ')
-
 print(fg('chartreuse_2a') + 'All info collected. Start to generate docker-compose and configuration files...' + attr('reset'))
 
 print(fg(33) + 'Creating folders for configuration files...' + attr('reset'))
@@ -298,9 +290,6 @@ if use_postgres_docker == 'y':
     env_list.append('POSTGRES_USER=' + postgres_user)
     env_list.append('POSTGRES_PASSWORD=' + postgres_password)
     env_list.append('POSTGRES_DATA=' + location_for_postgres_data)
-
-if use_sentry == 'y' and sentry_dsn is not None:
-    env_list.append('SENTRY_DSN=' + sentry_dsn)
 
 with open(join(mira, '.env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))

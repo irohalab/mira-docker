@@ -4,10 +4,6 @@ This docker-compose includes all the dependencies except RabbitMQ service, you c
 
 To use this in dev, you can specifiy each profile name with `--profile`, you can read the [docker-compose document](https://docs.docker.com/compose/profiles/) for more information
 
-run in production:
-
-docker-compose --profile prod up -d
-
 ## Prepare docker-compose and config files:
 You can use `init.sh` to help you setup the environment and config files as well as update docker-compose.
 ```bash
@@ -28,3 +24,15 @@ Then you will be prompted for several questions. After build complete, built fil
 
 from irohalab/Deneb repo. then copy the content of dist folder to your NGINX_DENEB defined location
 Then you should update the site section and domain section of albireo/config.yml file and nginx.conf to use your domain
+
+## Additional Steps
+If you want to use sentry for collecting error logs, you should add SENTRY_DSN environment variable for
+all mira-download-manager, mira-video-manager services. depends on how many project your created,
+you may need to set different SENTRY_DSN for each service.
+For albireo related services, you should modify the sentry.yml in albireo configuration folder.
+
+## Run services
+In your target folder (default is ~/mira), run the following command
+```bash
+$ docker-compose --profile prod up -d
+```

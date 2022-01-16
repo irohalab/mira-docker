@@ -63,7 +63,7 @@ mail:
 
 # RPC
 rpc:
-  server_host: localhost
+  server_host: albireo-scheduler
   server_port: 8080
 
 # Universal Feed
