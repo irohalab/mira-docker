@@ -1,6 +1,6 @@
 import subprocess
 from os import mkdir
-from os.path import join, expanduser, exists
+from os.path import join, expanduser, exists, abspath
 from shutil import copytree, rmtree
 
 from colored import fg, attr
@@ -65,7 +65,7 @@ if use_tag == 'y':
 else:
     print(fg(154) + 'You choose not use tag, will checkout master branch' + attr('reset'))
 
-cmd_base = 'docker run --rm -v {0}:/build'.format(tmp_folder)
+cmd_base = 'docker run --rm -v {0}:/build'.format(abspath(tmp_folder))
 if config_dict.get('web') is not None:
     env_list = []
     for key in config_dict.get('web'):
