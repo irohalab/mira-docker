@@ -1,5 +1,5 @@
 import subprocess
-from os import mkdir
+from os import mkdir, getuid, getgid
 from os.path import join, expanduser, exists, abspath
 from shutil import copytree, rmtree
 
@@ -15,6 +15,7 @@ if exists(tmp_folder):
     print(fg(111) + 'clean tmp folder' + attr('reset'))
     rmtree(tmp_folder, ignore_errors=True)
 mkdir(tmp_folder)
+
 
 target_folder = config_dict.get('target_folder')
 if not target_folder:
@@ -65,7 +66,10 @@ if use_tag == 'y':
 else:
     print(fg(154) + 'You choose not use tag, will checkout master branch' + attr('reset'))
 
-cmd_base = 'docker run --rm -v {0}:/build'.format(abspath(tmp_folder))
+uid = getuid()
+gid = getgid()
+
+cmd_base = 'docker run --rm -v {0}:/build -u {1}:{2}'.format(abspath(tmp_folder), uid, gid)
 if config_dict.get('web') is not None:
     env_list = []
     for key in config_dict.get('web'):
