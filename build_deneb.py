@@ -81,6 +81,8 @@ if return_code != 0:
     print(fg(9) + 'build failed!' + attr('reset'))
     exit(-1)
 
-copytree(tmp_folder, web_folder)
+if exists(web_folder):
+    rmtree(web_folder)
+copytree(join(tmp_folder, 'Deneb', 'dist'), web_folder)
 
 print('All done! built files is copied to ' + web_folder)
