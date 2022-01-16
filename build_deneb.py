@@ -36,11 +36,11 @@ def ask_env():
     ga = prompt('Enter GA')
     site_title = prompt('Enter SITE_TITLE')
 
-    config_dict['web']['chrome_extension_id'] = chrome_extension_id
-    config_dict['web']['firefox_extension_id'] = firefox_extension_id
-    config_dict['web']['firefox_extension_url'] = firefox_extension_url
-    config_dict['web']['ga'] = ga
-    config_dict['web']['site_title'] = site_title
+    config_dict['web']['CHROME_EXTENSION_ID'] = chrome_extension_id
+    config_dict['web']['FIREFOX_EXTENSION_ID'] = firefox_extension_id
+    config_dict['web']['FIREFOX_EXTENSION_URL'] = firefox_extension_url
+    config_dict['web']['GA'] = ga
+    config_dict['web']['SITE_TITLE'] = site_title
 
     write_json(config_path, config_dict)
 
@@ -89,4 +89,4 @@ if exists(web_folder):
     rmtree(web_folder)
 copytree(join(tmp_folder, 'Deneb', 'dist'), web_folder)
 
-print('All done! built files is copied to ' + web_folder)
+print(fg() + 'All done! built files is copied to ' + web_folder + attr('reset'))
