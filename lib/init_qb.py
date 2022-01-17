@@ -18,6 +18,6 @@ def update_qb(qb_username, qb_password):
             api_version = None
             retry_count = retry_count + 1
             sleep(5)
-    qb.login()
+    qb.login('admin', 'adminadmin')
     qb.set_preferences(web_ui_username=qb_username, web_ui_password=qb_password)
     print(fg(119) + 'qBittorrent username and password updated successfully!' + attr('reset'))
