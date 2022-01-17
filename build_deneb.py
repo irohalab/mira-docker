@@ -35,12 +35,17 @@ def ask_env():
     firefox_extension_url = prompt('Enter FIREFOX_EXTENSION_URL')
     ga = prompt('Enter GA')
     site_title = prompt('Enter SITE_TITLE')
-
+    http_proxy = prompt('Enter http proxy for docker container, if you need to access github via proxy: ')
+    https_proxy = prompt('Enter https proxy for docker container, press Enter to use the same with http proxy')
+    if not https_proxy:
+        https_proxy = http_proxy
     config_dict['web']['CHROME_EXTENSION_ID'] = chrome_extension_id
     config_dict['web']['FIREFOX_EXTENSION_ID'] = firefox_extension_id
     config_dict['web']['FIREFOX_EXTENSION_URL'] = firefox_extension_url
     config_dict['web']['GA'] = ga
     config_dict['web']['SITE_TITLE'] = site_title
+    config_dict['web']['HTTP_PROXY'] = http_proxy
+    config_dict['web']['HTTPS_PROXY'] = https_proxy
 
     write_json(config_path, config_dict)
 
@@ -75,6 +80,7 @@ if config_dict.get('web') is not None:
     for key in config_dict.get('web'):
         env_list.append('--env {0}={1}'.format(key, config_dict['web'][key]))
     cmd_base = cmd_base + ' ' + ' '.join(env_list)
+
 cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/irohalab/Deneb.git Deneb && cd Deneb && '
 if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
