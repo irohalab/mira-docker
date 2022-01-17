@@ -8,6 +8,8 @@ from time import sleep
 
 from colored import fg, attr
 import configparser
+
+from lib.init_qb import update_qb
 from lib.utils import prompt, load_yaml, load_json, write_yaml, write_json
 
 
@@ -332,7 +334,7 @@ if return_code != 0:
     exit(-1)
 
 if use_postgres_docker:
-    subprocess.call('docker-compose -f {0} --profile db up -d'.format(join(mira, 'docker-compose.yml')), cwd=mira,
+    subprocess.call('docker-compose -f {0} --profile db --profile qbt up -d'.format(join(mira, 'docker-compose.yml')), cwd=mira,
                     shell=True)
 
 print(fg(159) + 'waiting for postgres ready...' + attr('reset'))
@@ -365,6 +367,9 @@ return_code = subprocess.call('docker run --rm --network {0} --env-file .env pos
 if return_code != 0:
     print(fg(203) + 'failed to create databases' + attr('reset'))
     exit(-1)
+
+print(fg(33) + 'Apply qBittorrent username and password...' + attr('reset'))
+update_qb(qb_user, qb_password)
 
 subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
                 cwd=mira,

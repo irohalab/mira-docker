@@ -1,3 +1,9 @@
+certifi==2021.10.8
+charset-normalizer==2.0.10
 colored==1.4.3
+idna==3.3
+python-qbittorrent==0.4.2
+requests==2.27.1
 ruamel.yaml==0.17.20
 ruamel.yaml.clib==0.2.6
+urllib3==1.26.8
