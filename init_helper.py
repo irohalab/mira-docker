@@ -11,51 +11,22 @@ import configparser
 
 from lib.build_picfit import build_picfit
 from lib.init_qb import update_qb
-from lib.utils import prompt, load_yaml, load_json, write_yaml, write_json
+from lib.utils import prompt, load_yaml, load_json, write_yaml, write_json, config_path, config_dict
 
 
-home = expanduser('~')
-mira = join(home, 'mira')
+target_folder = config_dict['target_folder']
 
 dm_docker_tag = prompt('version tag of download manager image: ')
 vm_docker_tag = prompt('version tag of video manager image: ')
 albireo_docker_tag = prompt('version tag of albireo image: ')
 
-default_download_manager_conf_dir = join(mira, 'download-manager')
-tip_dm_config = 'location for download-manager config files (current: {0}): '.format(default_download_manager_conf_dir)
-download_manager_conf_dir = prompt(tip_dm_config)
-if not download_manager_conf_dir:
-    download_manager_conf_dir = default_download_manager_conf_dir
-
-default_video_manager_conf_dir = join(mira, 'video-manager')
-tip_vm_config = 'location for video-manager config files (current: {0}): '.format(default_video_manager_conf_dir)
-video_manager_conf_dir = prompt(tip_vm_config)
-if not video_manager_conf_dir:
-    video_manager_conf_dir = default_video_manager_conf_dir
-
-default_albireo_conf_dir = join(mira, 'albireo')
-tip_albireo_config = 'location for albireo config files (current: {0}): '.format(default_albireo_conf_dir)
-albireo_conf_dir = prompt(tip_albireo_config)
-if not albireo_conf_dir:
-    albireo_conf_dir = default_albireo_conf_dir
-
-default_nginx_conf_dir = join(mira, 'nginx')
-tip_nginx_config = 'location for nginx config files (current: {0}): '.format(default_nginx_conf_dir)
-nginx_conf_dir = prompt(tip_nginx_config)
-if not nginx_conf_dir:
-    nginx_conf_dir = default_nginx_conf_dir
-
-default_qb_conf_dir = join(mira, 'qb')
-tip_qb_config = 'location for qBittorrent config files (current: {0}): '.format(default_qb_conf_dir)
-qb_conf_dir = prompt(tip_qb_config)
-if not qb_conf_dir:
-    qb_conf_dir = default_qb_conf_dir
-
-default_picfit_conf_dir = join(mira, 'picfit')
-tip_picfit_config = 'location for picfit config files (current: {0}): '.format(default_picfit_conf_dir)
-picfit_conf_dir = prompt(tip_picfit_config)
-if not picfit_conf_dir:
-    picfit_conf_dir = default_picfit_conf_dir
+download_manager_conf_dir = join(target_folder, 'download-manager')
+video_manager_conf_dir = join(target_folder, 'video-manager')
+albireo_conf_dir = join(target_folder, 'albireo')
+nginx_conf_dir = join(target_folder, 'nginx')
+web_folder = join(target_folder, 'web')
+qb_conf_dir = join(target_folder, 'qb')
+picfit_conf_dir = join(target_folder, 'picfit')
 
 print('Use amqp url or amqp config object:')
 print('1. amqp url')
@@ -144,8 +115,8 @@ while init_albireo_db != 'y' and init_albireo_db != 'n':
 print(fg('chartreuse_2a') + 'All info collected. Start to generate docker-compose and configuration files...' + attr('reset'))
 
 print(fg(33) + 'Creating folders for configuration files...' + attr('reset'))
-if not exists(mira):
-    mkdir(mira)
+if not exists(target_folder):
+    mkdir(target_folder)
 
 if not exists(download_manager_conf_dir):
     mkdir(download_manager_conf_dir)
@@ -194,8 +165,8 @@ copyfile('./albireo/config.yml', albireo_conf)
 copyfile('./albireo/sentry.yml', albireo_sentry)
 copyfile('./albireo/alembic.ini', albireo_alembic_ini)
 
-copyfile('./docker-compose.yml', join(mira, 'docker-compose.yml'))
-copyfile('./docker-compose.override.yml', join(mira, 'docker-compose.override.yml'))
+copyfile('./docker-compose.yml', join(target_folder, 'docker-compose.yml'))
+copyfile('./docker-compose.override.yml', join(target_folder, 'docker-compose.override.yml'))
 
 
 def update_amqp(conf_dict):
@@ -290,7 +261,7 @@ picfit_conf_dict = load_json(picfit_conf)
 picfit_conf_dict['storage']['src']['location'] = download_location
 picfit_conf_dict['storage']['dst']['location'] = join(download_location, 'thumbnails')
 
-print(fg(33) + 'Generating environment variables file: {0}/env'.format(mira) + attr('reset'))
+print(fg(33) + 'Generating environment variables file: {0}/env'.format(target_folder) + attr('reset'))
 
 env_list = [
     'DM_CONFIG_DIR=' + download_manager_conf_dir,
@@ -311,19 +282,19 @@ if use_postgres_docker == 'y':
     env_list.append('POSTGRES_PASSWORD=' + postgres_password)
     env_list.append('POSTGRES_DATA=' + location_for_postgres_data)
 
-with open(join(mira, '.env'), 'w') as env_fd:
+with open(join(target_folder, '.env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
 
 print(fg(33) + 'init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo) + attr('reset'))
 
 if docker_network != 'mira':
-    docker_compose_dict = load_yaml(join(mira, 'docker-compose.yml'))
+    docker_compose_dict = load_yaml(join(target_folder, 'docker-compose.yml'))
     docker_compose_dict['networks']['mira']['name'] = docker_network
-    write_yaml(join(mira, 'docker-compose.yml'), docker_compose_dict)
+    write_yaml(join(target_folder, 'docker-compose.yml'), docker_compose_dict)
 
-    docker_compose_override_dict = load_yaml(join(mira, 'docker-compose.override.yml'))
+    docker_compose_override_dict = load_yaml(join(target_folder, 'docker-compose.override.yml'))
     docker_compose_override_dict['networks']['mira']['name'] = docker_network
-    write_yaml(join(mira, 'docker-compose.override.yml'), docker_compose_dict)
+    write_yaml(join(target_folder, 'docker-compose.override.yml'), docker_compose_dict)
 
 init_docker_compose = load_yaml('./docker-compose.init.yml')
 if init_albireo_db == 'n':
@@ -342,7 +313,7 @@ init_docker_compose['services']['download-manager-init']['command'] = '/app/node
 if docker_network != 'mira':
     init_docker_compose['networks']['mira']['name'] = docker_network
 
-write_yaml(join(mira, 'docker-compose.init.yml'), init_docker_compose)
+write_yaml(join(target_folder, 'docker-compose.init.yml'), init_docker_compose)
 
 print(fg(33) + 'create docker network: ' + docker_network + attr('reset'))
 
@@ -352,7 +323,7 @@ if return_code != 0:
     exit(-1)
 
 if use_postgres_docker:
-    subprocess.call('docker-compose -f {0} --profile db --profile qbt up -d'.format(join(mira, 'docker-compose.yml')), cwd=mira,
+    subprocess.call('docker-compose -f {0} --profile db --profile qbt up -d'.format(join(target_folder, 'docker-compose.yml')), cwd=target_folder,
                     shell=True)
 
 print(fg(159) + 'waiting for postgres ready...' + attr('reset'))
@@ -361,7 +332,7 @@ while True:
     return_code = subprocess.call(
         'docker run --rm --network {0} --env-file .env postgres:12.8 pg_isready -h {1} -p {2}'.format(
             docker_network, postgres_host, postgres_port),
-        cwd=mira,
+        cwd=target_folder,
         shell=True)
     if return_code == 0:
         break
@@ -380,7 +351,7 @@ if init_albireo_db == 'y':
     psql_statement = psql_statement + ' -c \'CREATE DATABASE "{0}" ENCODING UTF8;\''.format(db_name_albireo)
 
 return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 {1}'.format(
-                                docker_network, psql_statement), cwd=mira, shell=True)
+                                docker_network, psql_statement), cwd=target_folder, shell=True)
 
 if return_code != 0:
     print(fg(203) + 'failed to create databases' + attr('reset'))
@@ -389,16 +360,16 @@ if return_code != 0:
 print(fg(33) + 'Apply qBittorrent username and password...' + attr('reset'))
 update_qb(qb_user, qb_password)
 
-subprocess.call('docker-compose -f {0} --profile init up'.format(join(mira, 'docker-compose.init.yml')),
-                cwd=mira,
+subprocess.call('docker-compose -f {0} --profile init up'.format(join(target_folder, 'docker-compose.init.yml')),
+                cwd=target_folder,
                 shell=True)
 
 
-subprocess.call('docker-compose -f {0} --profile db down'.format(join(mira, 'docker-compose.yml')), cwd=mira,
+subprocess.call('docker-compose -f {0} --profile db down'.format(join(target_folder, 'docker-compose.yml')), cwd=target_folder,
                 shell=True)
 
-subprocess.call('docker-compose -f {0} --profile init down'.format(join(mira, 'docker-compose.init.yml')),
-                cwd=mira,
+subprocess.call('docker-compose -f {0} --profile init down'.format(join(target_folder, 'docker-compose.init.yml')),
+                cwd=target_folder,
                 shell=True)
 
 print(fg(33) + 'build picfit locally...' + attr('reset'))

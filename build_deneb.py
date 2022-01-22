@@ -1,13 +1,10 @@
 import subprocess
 from os import mkdir, getuid, getgid
-from os.path import join, expanduser, exists, abspath
+from os.path import join, exists, abspath
 from shutil import copytree, rmtree
 
 from colored import fg, attr
-from lib.utils import config_path, config_dict, prompt, write_json
-
-home = expanduser('~')
-mira = join(home, 'mira')
+from lib.utils import config_path, config_dict, prompt, write_json, target_folder
 
 tmp_folder = './web/build'
 
@@ -16,17 +13,7 @@ if exists(tmp_folder):
     rmtree(tmp_folder, ignore_errors=True)
 mkdir(tmp_folder)
 
-
-target_folder = config_dict.get('target_folder')
-if not target_folder:
-    target_folder = mira
-    config_dict['target_folder'] = target_folder
-    print(fg(10) + 'target_folder not found, target_folder set to ' + target_folder + attr('reset'))
-
-web_folder = config_dict.get('web_folder')
-if not web_folder:
-    web_folder = join(target_folder, 'web')
-    print(fg(10) + 'web_folder not found, web_folder set to ' + web_folder + attr('reset'))
+web_folder = join(target_folder, 'web')
 
 
 def ask_env():
