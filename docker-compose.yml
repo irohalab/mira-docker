@@ -35,12 +35,12 @@ services:
     networks:
       - mira
   picfit:
-    image: 'picfit-local'
+    image: mira/picfit
     profiles: ['picfit', 'prod']
     environment:
       PICFIT_CONFIG_PATH: /etc/picfit/config.json
     volumes:
-      - {PICFIT_CONFIG:-./picfit/config.json}:/etc/picfit/config.json:ro
+      - ${PICFIT_CONFIG:-./picfit/config.json}:/etc/picfit/config.json:ro
   nginx:
     image: nginx:1.19
     profiles: ['prod', 'nginx']
