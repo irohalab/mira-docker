@@ -42,8 +42,8 @@ def save_config():
 def ask_target_folder():
     home = expanduser('~')
     mira = join(home, 'mira')
-    config_dict['target_folder'] = input('Enter the base folder for docker-compose files, '
-                                         'web assets and other configs, (press ENTER to use default: {0}) '.format(mira))
+    config_dict['target_folder'] = prompt('Enter the base folder for docker-compose files, web assets and'
+                                          ' other configs, (press ENTER to use default: {0}) '.format(mira))
     if not config_dict['target_folder']:
         config_dict['target_folder'] = mira
 
