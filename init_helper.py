@@ -9,6 +9,7 @@ from time import sleep
 from colored import fg, attr
 import configparser
 
+from lib.build_picfit import build_picfit
 from lib.init_qb import update_qb
 from lib.utils import prompt, load_yaml, load_json, write_yaml, write_json
 
@@ -49,6 +50,12 @@ tip_qb_config = 'location for qBittorrent config files (current: {0}): '.format(
 qb_conf_dir = prompt(tip_qb_config)
 if not qb_conf_dir:
     qb_conf_dir = default_qb_conf_dir
+
+default_picfit_conf_dir = join(mira, 'picfit')
+tip_picfit_config = 'location for picfit config files (current: {0}): '.format(default_picfit_conf_dir)
+picfit_conf_dir = prompt(tip_picfit_config)
+if not picfit_conf_dir:
+    picfit_conf_dir = default_picfit_conf_dir
 
 print('Use amqp url or amqp config object:')
 print('1. amqp url')
@@ -155,6 +162,9 @@ if not exists(nginx_conf_dir):
 if not exists(qb_conf_dir):
     mkdir(qb_conf_dir)
 
+if not exists(picfit_conf_dir):
+    mkdir(picfit_conf_dir)
+
 if not exists(location_for_postgres_data):
     os.makedirs(location_for_postgres_data)
 
@@ -173,6 +183,9 @@ copyfile('./video-manager/ormconfig.json', video_manager_ormconf)
 
 nginx_conf = join(nginx_conf_dir, 'nginx.conf')
 copyfile('./nginx/nginx.conf', nginx_conf)
+
+picfit_conf = join(picfit_conf_dir, 'config.json')
+copyfile('./picfit/config.json', picfit_conf)
 
 albireo_conf = join(albireo_conf_dir, 'config.yml')
 albireo_sentry = join(albireo_conf_dir, 'sentry.yml')
@@ -273,6 +286,10 @@ alembic_conf_dict['alembic']['sqlalchemy.url'] = 'postgresql://{0}:{1}@{2}:{3}/{
 with open(albireo_alembic_ini, 'w') as alembic_conf_fd:
     alembic_conf_dict.write(alembic_conf_fd)
 
+picfit_conf_dict = load_json(picfit_conf)
+picfit_conf_dict['storage']['src']['location'] = download_location
+picfit_conf_dict['storage']['dst']['location'] = join(download_location, 'thumbnails')
+
 print(fg(33) + 'Generating environment variables file: {0}/env'.format(mira) + attr('reset'))
 
 env_list = [
@@ -285,7 +302,8 @@ env_list = [
     'DOWNLOAD_DATA=' + download_location,
     'DOWNLOAD_MANAGER_TAG=' + dm_docker_tag,
     'VIDEO_MANAGER_TAG=' + vm_docker_tag,
-    'ALBIREO_TAG=' + albireo_docker_tag
+    'ALBIREO_TAG=' + albireo_docker_tag,
+    'PICFIT_CONFIG=' + picfit_conf
 ]
 
 if use_postgres_docker == 'y':
@@ -382,6 +400,9 @@ subprocess.call('docker-compose -f {0} --profile db down'.format(join(mira, 'doc
 subprocess.call('docker-compose -f {0} --profile init down'.format(join(mira, 'docker-compose.init.yml')),
                 cwd=mira,
                 shell=True)
+
+print(fg(33) + 'build picfit locally...' + attr('reset'))
+build_picfit()
 
 print(fg('chartreuse_2a') +
       'All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name' +

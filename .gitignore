@@ -4,3 +4,6 @@ venv
 web/env
 web/config.json
 .config.json
+
+web/build
+picfit/build
