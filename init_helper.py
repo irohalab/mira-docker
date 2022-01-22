@@ -14,7 +14,7 @@ from lib.init_qb import update_qb
 from lib.utils import prompt, load_yaml, load_json, write_yaml, write_json, config_path, config_dict
 
 
-target_folder = config_dict['target_folder']
+target_folder = config_dict.get('target_folder')
 
 dm_docker_tag = prompt('version tag of download manager image: ')
 vm_docker_tag = prompt('version tag of video manager image: ')

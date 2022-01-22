@@ -39,6 +39,13 @@ def save_config():
     write_json(config_path, config_dict)
 
 
+def ask_target_folder():
+    config_dict['target_folder'] = input('Enter the base folder for docker-compose files, '
+                                         'web assets and other configs, (press ENTER to use default: {0}) '.format(mira))
+    if not config_dict['target_folder']:
+        config_dict['target_folder'] = mira
+
+
 if exists(config_path):
     with open(config_path, 'r') as config_fd:
         config_dict = json.load(config_fd)
@@ -52,9 +59,8 @@ if exists(config_path):
         while use_saved_target_folder != 'y' and use_saved_target_folder != 'n':
             use_saved_target_folder = prompt('Do you want to use last used target folder path: {0}'.format(target_folder))
     if use_saved_target_folder == 'n':
-        target_folder = input('Enter the base folder for docker-compose files, '
-                              'web assets and other configs, (press ENTER to use default: {0}) '.format(mira))
-        if not target_folder:
-            target_folder = mira
-        config_dict['target_folder'] = target_folder
+        ask_target_folder()
         save_config()
+else:
+    ask_target_folder()
+    save_config()
