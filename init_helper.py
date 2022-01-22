@@ -268,6 +268,7 @@ env_list = [
     'VM_CONFIG_DIR=' + video_manager_conf_dir,
     'ALBIREO_CONFIG_DIR=' + albireo_conf_dir,
     'NGINX_CONFIG=' + nginx_conf,
+    'NGINX_DENEB=' + web_folder,
     'QBT_CONFIG_LOCATION=' + qb_conf_dir,
     'QBT_DOWNLOADS_LOCATION=' + join(download_location, 'downloads'),
     'DOWNLOAD_DATA=' + download_location,
