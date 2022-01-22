@@ -57,7 +57,8 @@ if exists(config_path):
     target_folder = config_dict.get('target_folder')
     if target_folder is not None:
         while use_saved_target_folder != 'y' and use_saved_target_folder != 'n':
-            use_saved_target_folder = prompt('Do you want to use last used target folder path: {0}'.format(target_folder))
+            use_saved_target_folder = prompt('Do you want to use last used target folder path: {0}, y for yes, n for no'
+                                             .format(target_folder))
     if use_saved_target_folder == 'n':
         ask_target_folder()
         save_config()

@@ -5,18 +5,18 @@ from shutil import rmtree
 
 from colored import attr, fg
 
+from lib.utils import prompt
+
 
 def build_picfit():
-    # tmp_folder = './picfit/build'
-    # if exists(tmp_folder):
-    #     print(fg(111) + 'clean tmp folder' + attr('reset'))
-    #     rmtree(tmp_folder)
-    # mkdir(tmp_folder)
-    #
-    # return_code = subprocess.call('git clone https://github.com/thoas/picfit.git picfit', cwd=tmp_folder, shell=True)
-    # if return_code != 0:
-    #     raise Exception('failed to clone picfit repo')
-
-    return_code = subprocess.call('docker build -t mira/picfit https://github.com/thoas/picfit.git', cwd='./picfit', shell=True)
-    if return_code != 0:
-        raise Exception('failed to build picfit')
+    build_image = None
+    while build_image != 'y' and build_image != 'n':
+        build_image = prompt('Do you want to build a new picfit image, '
+                             'if you have previously built a image. you can choose no, y for yes, n for no: ')
+    if build_image == 'y':
+        print(fg(33) + 'build a new picfit image' + attr('reset'))
+        return subprocess.call('docker build -t mira/picfit https://github.com/thoas/picfit.git',
+                               cwd='./picfit', shell=True)
+    else:
+        print(fg(33) + 'use existing image' + attr('reset'))
+        return 0

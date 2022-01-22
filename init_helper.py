@@ -323,14 +323,19 @@ write_yaml(join(target_folder, 'docker-compose.init.yml'), init_docker_compose)
 
 print(fg(33) + 'create docker network: ' + docker_network + attr('reset'))
 
+final_code = 0
+
 return_code = subprocess.call('docker network create -d bridge {0}'.format(docker_network), shell=True)
-if return_code != 0:
-    print(fg(203) + 'failed to create network' + attr('reset'))
-    exit(-1)
+# if return_code != 0:
+#     print(fg(203) + 'failed to create network' + attr('reset'))
+#     exit(-1)
+final_code = final_code | return_code
 
 if use_postgres_docker:
-    subprocess.call('docker-compose -f {0} --profile db --profile qbt up -d'.format(join(target_folder, 'docker-compose.yml')), cwd=target_folder,
+    return_code = subprocess.call('docker-compose -f {0} --profile db --profile qbt up -d'
+                                  .format(join(target_folder, 'docker-compose.yml')), cwd=target_folder,
                     shell=True)
+    final_code = final_code | return_code
 
 print(fg(159) + 'waiting for postgres ready...' + attr('reset'))
 while True:
@@ -358,7 +363,7 @@ if init_albireo_db == 'y':
 
 return_code = subprocess.call('docker run --rm --network {0} --env-file .env postgres:12.8 {1}'.format(
                                 docker_network, psql_statement), cwd=target_folder, shell=True)
-
+final_code = final_code | return_code
 if return_code != 0:
     print(fg(203) + 'failed to create databases' + attr('reset'))
     exit(-1)
@@ -366,21 +371,31 @@ if return_code != 0:
 print(fg(33) + 'Apply qBittorrent username and password...' + attr('reset'))
 update_qb(qb_user, qb_password)
 
-subprocess.call('docker-compose -f {0} --profile init up'.format(join(target_folder, 'docker-compose.init.yml')),
-                cwd=target_folder,
-                shell=True)
+return_code = subprocess.call('docker-compose -f {0} --profile init up'
+                              .format(join(target_folder, 'docker-compose.init.yml')),
+                              cwd=target_folder,
+                              shell=True)
+final_code = final_code | return_code
 
+return_code = subprocess.call('docker-compose -f {0} --profile db down'
+                              .format(join(target_folder, 'docker-compose.yml')), cwd=target_folder,
+                              shell=True)
 
-subprocess.call('docker-compose -f {0} --profile db down'.format(join(target_folder, 'docker-compose.yml')), cwd=target_folder,
-                shell=True)
+final_code = final_code | return_code
 
-subprocess.call('docker-compose -f {0} --profile init down'.format(join(target_folder, 'docker-compose.init.yml')),
-                cwd=target_folder,
-                shell=True)
+return_code = subprocess.call('docker-compose -f {0} --profile init down'
+                              .format(join(target_folder, 'docker-compose.init.yml')),
+                              cwd=target_folder,
+                              shell=True)
+final_code = final_code | return_code
 
-print(fg(33) + 'build picfit locally...' + attr('reset'))
-build_picfit()
+return_code = build_picfit()
 
-print(fg('chartreuse_2a') +
-      'All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name' +
-      attr('reset'))
+final_code = final_code | return_code
+
+if final_code != 0:
+    print(fg(226) + 'Setup completed, There are some failed steps. Please check!')
+else:
+    print(fg('chartreuse_2a') +
+          'All done! Don\'t forget to update the host in site section of albireo config file and nginx server_name' +
+          attr('reset'))
