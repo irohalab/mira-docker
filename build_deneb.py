@@ -82,4 +82,4 @@ if exists(web_folder):
     rmtree(web_folder)
 copytree(join(tmp_folder, 'Deneb', 'dist'), web_folder)
 
-print(fg(119 ) + 'All done! built files is copied to ' + web_folder + attr('reset'))
+print(fg(119) + 'All done! built files is copied to ' + web_folder + attr('reset'))
