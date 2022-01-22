@@ -7,3 +7,4 @@ web/config.json
 
 web/build
 picfit/build
+lib/__pycache__/
