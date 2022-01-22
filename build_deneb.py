@@ -17,13 +17,13 @@ web_folder = join(target_folder, 'web')
 
 
 def ask_env():
-    chrome_extension_id = prompt('Enter CHROME_EXTENSION_ID')
-    firefox_extension_id = prompt('Enter FIREFOX_EXTENSION_ID')
-    firefox_extension_url = prompt('Enter FIREFOX_EXTENSION_URL')
-    ga = prompt('Enter GA')
-    site_title = prompt('Enter SITE_TITLE')
+    chrome_extension_id = prompt('Enter CHROME_EXTENSION_ID: ')
+    firefox_extension_id = prompt('Enter FIREFOX_EXTENSION_ID: ')
+    firefox_extension_url = prompt('Enter FIREFOX_EXTENSION_URL: ')
+    ga = prompt('Enter GA: ')
+    site_title = prompt('Enter SITE_TITLE: ')
     http_proxy = prompt('Enter http proxy for docker container, if you need to access github via proxy: ')
-    https_proxy = prompt('Enter https proxy for docker container, press Enter to use the same with http proxy')
+    https_proxy = prompt('Enter https proxy for docker container, press Enter to use the same with http proxy: ')
     if not https_proxy:
         https_proxy = http_proxy
     config_dict['web']['CHROME_EXTENSION_ID'] = chrome_extension_id

@@ -44,7 +44,7 @@ else:
     amqp_password = prompt('amqp password: ')
 
 print('enter login credentials to connect qbittorrent daemon')
-qb_user = prompt('qbittorrent username (press enter to use admin: ')
+qb_user = prompt('qbittorrent username (press enter to use admin): ')
 if not qb_user:
     qb_user = 'admin'
 
@@ -52,7 +52,7 @@ qb_password = prompt('qbittorent password (press enter to generate a random one)
 if not qb_password:
     qb_password = token_hex(nbytes=16)
 
-download_location = prompt('data path for albireo, default is /data/albireo: ')
+download_location = prompt('data path for albireo, press enter to use /data/albireo: ')
 if not download_location:
     download_location = '/data/albireo'
 
@@ -286,7 +286,12 @@ if use_postgres_docker == 'y':
 with open(join(target_folder, '.env'), 'w') as env_fd:
     env_fd.write('\n'.join(env_list))
 
-print(fg(33) + 'init database, you admin account is {0}, password is {1}'.format(default_admin_albireo, default_admin_password_albireo) + attr('reset'))
+print(fg(33) + '======================================================================================' + attr('reset'))
+print(' ')
+print(fg(33) + 'init database, you admin account is ' + fg(11) + attr('bold') + default_admin_albireo + attr('reset')
+      + fg(33) + ' password is ' + attr('bold') + fg(11) + default_admin_password_albireo + attr('reset'))
+print(' ')
+print(fg(33) + '======================================================================================' + attr('reset'))
 
 if docker_network != 'mira':
     docker_compose_dict = load_yaml(join(target_folder, 'docker-compose.yml'))
