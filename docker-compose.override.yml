@@ -12,6 +12,7 @@ services:
     environment:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
+      SERVER_BASE_URL: ${DM_SERVER_BASE_URL:-http://download-manager-server:8081}
     volumes:
       - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
       - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
@@ -31,6 +32,7 @@ services:
     environment:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
+      SERVER_BASE_URL: ${DM_SERVER_BASE_URL:-http://download-manager-server:8081}
     volumes:
       - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
       - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
@@ -51,6 +53,7 @@ services:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: JOB_SCHEDULER
+      SERVER_BASE_URL: ${VM_SERVER_BASE_URL:-http://video-manager-job-executor-file-server:8082}
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
@@ -70,6 +73,7 @@ services:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: JOB_EXECUTOR
+      SERVER_BASE_URL: ${VM_SERVER_BASE_URL:-http://video-manager-job-executor-file-server:8082}
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
@@ -89,6 +93,7 @@ services:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
       START_AS: API_SERVER
+      SERVER_BASE_URL: ${VM_SERVER_BASE_URL:-http://video-manager-job-executor-file-server:8082}
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
@@ -105,7 +110,8 @@ services:
     environment:
       APPCONFIG: /etc/mira/config.yml
       ORMCONFIG: /etc/mira/ormconfig.json
-      START_AS: JOB_EXECUTOR
+      START_AS: JOB_EXECUTOR,
+      SERVER_BASE_URL: ${VM_SERVER_BASE_URL:-http://video-manager-job-executor-file-server:8082}
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro

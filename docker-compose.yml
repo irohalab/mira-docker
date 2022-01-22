@@ -30,7 +30,7 @@ services:
       - '8091:${QBT_HTTP_PORT:-8091}'
     restart: unless-stopped
     volumes:
-      - ${QBT_DOWNLOADS_LOCATION:-/data/downloads}:/downloads
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/download
       - ${QBT_CONFIG_LOCATION:-./qb/qbittorrent}:/config
     networks:
       - mira
