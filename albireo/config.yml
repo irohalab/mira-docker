@@ -41,8 +41,8 @@ feedparser:
 # a scheme is required, e.g. https://static.example.com
 # this is optional
 domain:
-  image: mira-static # the image domain for your image resource, such as thumbnails and cover
-  video: mira-static # the video domain for your video resource
+  image: http://mira-static # the image domain for your image resource, such as thumbnails and cover
+  video: http://mira-static # the video domain for your video resource
 
 # site name
 site:

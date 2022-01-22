@@ -149,7 +149,7 @@ services:
       - ${ALBIREO_CONFIG_DIR:-./albireo}/config.yml:/usr/app/config/config.yml:ro
       - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
       - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
-      - ${DOWNLOAD_DATA:-/data/albireo}:/data/Albireo:rw
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
     command: '/usr/bin/python Scheduler.py'
     restart: unless-stopped
     depends_on:
