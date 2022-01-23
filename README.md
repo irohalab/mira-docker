@@ -45,6 +45,16 @@ add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Mo
 add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
 ```
 
+### Update hosts in client
+
+If you use this service locally, you may access via ip or localhost. but this may cause nginx failing to match server section.
+because the Host header is not match. To fix this, you may need to add the following to your client OS hosts file:
+```
+<ip of your server>    mira
+<ip of your server>    mira-static
+```
+After this, your can use `http://mira` to access the service from browser.
+
 ### Add sentry DSN for debug purpose (for developers)
 If you want to use sentry for collecting error logs, you should add SENTRY_DSN environment variable for
 all mira-download-manager, mira-video-manager services. depends on how many project your created,
@@ -56,3 +66,7 @@ In your target folder (default is ~/mira), run the following command
 ```bash
 $ docker-compose --profile prod up -d
 ```
+
+## Login to Albireo.
+Login using the default admin account from a browser. If you choose generated password for your admin account.
+you need to find that password from the console log. you will be prompted to update your email address. 
