@@ -11,9 +11,10 @@ $ ./init.sh
 ```
 then you will be asked several questions.
 
-Or you can also do it yourself manually.
+**Note that if you choose generated password for admin account of Albireo, it will be printed in console. that's the
+only place you can find the password. so write it down. you will need that to login afterward. 
 
-After generate the config and docker-compose. you should also download and buid your Deneb project
+Or you can also do it yourself manually.
 
 ## Build Deneb:
 in the mira-docker directory. run the script
@@ -22,7 +23,6 @@ $ ./build.sh
 ```
 Then you will be prompted for several questions. After build complete, built files will be copied to <target folder>/web
 
-from irohalab/Deneb repo. then copy the content of dist folder to your NGINX_DENEB defined location
 Then you should update the site section and domain section of albireo/config.yml file and nginx.conf to use your domain
 
 ## update some config manually
@@ -34,6 +34,18 @@ If you want to access your web directly using nginx bundled with docker-compose.
 by default, the port is 80, but if your host cannot use 80, you need to update this manually in the docker-compose.yml
 
 ## Additional Optional Steps
+
+### Update nginx.conf
+If you're using nginx as your only reverse proxy. You may have CORS policy issue in browser. To fix this. Add the following header
+in the nginx.conf, inside directive `location ^~ /video/ {}`
+```
+add_header 'Access-Control-Allow-Origin' '*' always;
+add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
+```
+
+### Add sentry DSN for debug purpose (for developers)
 If you want to use sentry for collecting error logs, you should add SENTRY_DSN environment variable for
 all mira-download-manager, mira-video-manager services. depends on how many project your created,
 you may need to set different SENTRY_DSN for each service.
