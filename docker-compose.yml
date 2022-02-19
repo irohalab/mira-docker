@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-'123456'}
     # you can disable exposing ports to host if there is only docker-compose services need to access postgres
-    ports:
-      - '5432:${POSTGRES_PORT:-5432}'
+#    ports:
+#      - '5432:${POSTGRES_PORT:-5432}'
     volumes:
       - ${POSTGRES_DATA:-/var/mira/data}:/var/lib/postgresql/data
     restart: unless-stopped
