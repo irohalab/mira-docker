@@ -300,7 +300,7 @@ if docker_network != 'mira':
 
     docker_compose_override_dict = load_yaml(join(target_folder, 'docker-compose.override.yml'))
     docker_compose_override_dict['networks']['mira']['name'] = docker_network
-    write_yaml(join(target_folder, 'docker-compose.override.yml'), docker_compose_dict)
+    write_yaml(join(target_folder, 'docker-compose.override.yml'), docker_compose_override_dict)
 
 init_docker_compose = load_yaml('./docker-compose.init.yml')
 if init_albireo_db == 'n':
