@@ -36,7 +36,7 @@ services:
     volumes:
       - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
       - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-      - ${DOWNLOAD:-/data/albireo}:/data/download
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/download
     restart: unless-stopped
     command: 'node dist/WebServer.js'
     depends_on:
