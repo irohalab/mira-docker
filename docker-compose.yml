@@ -42,6 +42,7 @@ services:
     volumes:
       - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo
       - ${PICFIT_CONFIG:-./picfit/config.json}:/etc/picfit/config.json:ro
+    restart: unless-stopped
     networks:
       - mira
   nginx:
