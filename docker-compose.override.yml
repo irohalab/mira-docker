@@ -24,6 +24,11 @@ services:
       - qbittorrent
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   download-manager-server:
     image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
@@ -44,6 +49,11 @@ services:
       - qbittorrent
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   video-manager-job-scheduler:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -64,6 +74,11 @@ services:
       - postgres
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   video-manager-job-executor:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -84,6 +99,11 @@ services:
       - postgres
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   video-manager-api:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -102,6 +122,11 @@ services:
     command: 'node dist/WebServer.js'
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   video-manager-job-executor-file-server:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
@@ -122,6 +147,11 @@ services:
       - postgres
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   albireo-server:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
@@ -143,6 +173,11 @@ services:
       - postgres
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   albireo-scheduler:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
@@ -162,6 +197,11 @@ services:
       - postgres
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
 networks:
   mira:

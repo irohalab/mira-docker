@@ -16,6 +16,11 @@ services:
     restart: unless-stopped
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     profiles: ['prod', 'qbt']
@@ -34,6 +39,11 @@ services:
       - ${QBT_CONFIG_LOCATION:-./qb/qbittorrent}:/config
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
   picfit:
     image: mira/picfit
     profiles: ['picfit', 'prod']
@@ -45,6 +55,11 @@ services:
     restart: unless-stopped
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
   nginx:
     image: nginx:1.19
     profiles: ['prod', 'nginx']
@@ -59,6 +74,11 @@ services:
       - picfit
     networks:
       - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
 networks:
   mira:
