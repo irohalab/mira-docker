@@ -72,7 +72,12 @@ cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/i
 if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
 
-cmd = cmd + 'npm install && npm run build\''
+if config_dict['web'].get('HTTP_PROXY') is not None:
+    cmd = cmd + 'npm --proxy {0} install && '.format(config_dict['web']['HTTP_PROXY'])
+else:
+    cmd = cmd + 'npm install && '
+
+cmd = cmd + 'npm run build\''
 return_code = subprocess.call(cmd, shell=True, cwd=target_folder)
 
 if return_code != 0:
