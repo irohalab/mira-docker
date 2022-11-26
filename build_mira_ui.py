@@ -20,7 +20,7 @@ def ask_env():
     chrome_extension_id = prompt('Enter CHROME_EXTENSION_ID: ')
     firefox_extension_id = prompt('Enter FIREFOX_EXTENSION_ID: ')
     firefox_extension_url = prompt('Enter FIREFOX_EXTENSION_URL: ')
-    ga = prompt('Enter GA: ')
+    # ga = prompt('Enter GA: ')
     site_title = prompt('Enter SITE_TITLE: ')
     http_proxy = prompt('Enter http proxy for docker container, if you need to access github via proxy: ')
     https_proxy = prompt('Enter https proxy for docker container, press Enter to use the same with http proxy: ')
@@ -29,7 +29,7 @@ def ask_env():
     config_dict['web']['CHROME_EXTENSION_ID'] = chrome_extension_id
     config_dict['web']['FIREFOX_EXTENSION_ID'] = firefox_extension_id
     config_dict['web']['FIREFOX_EXTENSION_URL'] = firefox_extension_url
-    config_dict['web']['GA'] = ga
+    # config_dict['web']['GA'] = ga
     config_dict['web']['SITE_TITLE'] = site_title
     config_dict['web']['HTTP_PROXY'] = http_proxy
     config_dict['web']['HTTPS_PROXY'] = https_proxy
@@ -68,10 +68,10 @@ if config_dict.get('web') is not None:
         env_list.append('--env {0}={1}'.format(key, config_dict['web'][key]))
     cmd_base = cmd_base + ' ' + ' '.join(env_list)
 
-cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/irohalab/Deneb.git Deneb && cd Deneb && '
+cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/irohalab/mira-ui.git mira-ui && cd mira-ui && '
 if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
-cmd = cmd + 'yarn install && npm run build:aot:prod\''
+cmd = cmd + 'yarn install && npm run build\''
 return_code = subprocess.call(cmd, shell=True, cwd=target_folder)
 
 if return_code != 0:
@@ -80,6 +80,6 @@ if return_code != 0:
 
 if exists(web_folder):
     rmtree(web_folder)
-copytree(join(tmp_folder, 'Deneb', 'dist'), web_folder)
+copytree(join(tmp_folder, 'mira-ui', 'dist', 'mira-ui'), web_folder)
 
 print(fg(119) + 'All done! built files is copied to ' + web_folder + attr('reset'))

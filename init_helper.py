@@ -311,11 +311,8 @@ else:
                                                      ' && /usr/bin/python /usr/app/tools.py --user-promote {0} 3"'.\
                                                      format(default_admin_albireo, default_admin_password_albireo)
 
-init_docker_compose['services']['video-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
-                                                       ' -f /etc/mira/ormconfig.json'
-
-init_docker_compose['services']['download-manager-init']['command'] = '/app/node_modules/.bin/typeorm schema:sync' \
-                                                          ' -f /etc/mira/ormconfig.json'
+init_docker_compose['services']['video-manager-init']['command'] = 'npm run migrate:sync:silent'
+init_docker_compose['services']['download-manager-init']['command'] = 'npm run migrate:sync:silent'
 if docker_network != 'mira':
     init_docker_compose['networks']['mira']['name'] = docker_network
 
