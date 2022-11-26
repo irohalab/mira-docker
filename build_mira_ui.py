@@ -63,7 +63,7 @@ gid = getgid()
 
 cmd_base = 'docker run --rm -v {0}:/build -u {1}:{2}'.format(abspath(tmp_folder), uid, gid)
 if config_dict.get('web') is not None:
-    env_list = []
+    env_list = ['--env HOME=/build']
     for key in config_dict.get('web'):
         env_list.append('--env {0}={1}'.format(key, config_dict['web'][key]))
     cmd_base = cmd_base + ' ' + ' '.join(env_list)
