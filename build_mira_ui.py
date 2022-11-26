@@ -61,10 +61,6 @@ else:
 uid = getuid()
 gid = getgid()
 
-if config_dict['web'].get('HTTP_PROXY') is not None:
-    with open(abspath(tmp_folder) + '/.yarnrc', 'w') as fd:
-        fd.write('httpProxy="{0}"'.format(config_dict['web']['HTTP_PROXY']))
-
 cmd_base = 'docker run --rm -v {0}:/build -u {1}:{2}'.format(abspath(tmp_folder), uid, gid)
 if config_dict.get('web') is not None:
     env_list = []
@@ -76,7 +72,7 @@ cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/i
 if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
 
-cmd = cmd + 'yarn install && npm run build\''
+cmd = cmd + 'npm install && npm run build\''
 return_code = subprocess.call(cmd, shell=True, cwd=target_folder)
 
 if return_code != 0:
