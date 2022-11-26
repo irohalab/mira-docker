@@ -71,6 +71,8 @@ if config_dict.get('web') is not None:
 cmd = cmd_base + ' node:16 bash -c \'cd /build && git clone https://github.com/irohalab/mira-ui.git mira-ui && cd mira-ui && '
 if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
+if config_dict['web'].get('HTTP_PROXY') is not None:
+    cmd = cmd + 'yarn config set httpProxy {0} && '.format(config_dict['web']['HTTP_PROXY'])
 cmd = cmd + 'yarn install && npm run build\''
 return_code = subprocess.call(cmd, shell=True, cwd=target_folder)
 
