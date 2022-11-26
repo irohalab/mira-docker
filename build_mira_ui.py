@@ -73,11 +73,9 @@ if tag_to_checkout is not None:
     cmd = cmd + 'git checkout tags/{0} -b {0}-branch && '.format(tag_to_checkout)
 
 if config_dict['web'].get('HTTP_PROXY') is not None:
-    cmd = cmd + 'npm --proxy {0} install && '.format(config_dict['web']['HTTP_PROXY'])
-else:
-    cmd = cmd + 'npm install && '
+    cmd = cmd + 'npm config set proxy {0} && '.format(config_dict['web']['HTTP_PROXY'])
 
-cmd = cmd + 'npm run build\''
+cmd = cmd + 'npm install && npm run build\''
 return_code = subprocess.call(cmd, shell=True, cwd=target_folder)
 
 if return_code != 0:
