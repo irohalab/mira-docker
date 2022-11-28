@@ -21,10 +21,10 @@ appIdHostMap:
 #   ${home}: user's home directory
 #   ${project_root}: project's root directory
 # the job executor profile path, default is ~/.mira/video-manager
-jobExecProfileDir: "${project_root}/temp"
+jobExecProfileDir: "/temp"
 
 # the job executor's temp directory for copied/downloaded video files, default is ${jobExecProfileDir}/temp
-videoTempDir: "${project_root}/temp/video"
+videoTempDir: "/temp/video"
 
 # the maximum execution time of a job, a job will be rescheduled if it exceeds the maximum time. unit is minutes
 maxJobProcessTime: 300
@@ -49,3 +49,12 @@ ApiWebServer:
   enableHttps: false
   host: localhost
   port: 8083
+
+# base path for job log.
+jobLogPath: '/var/log/jobs'
+
+# expire time for jobs, unit is days
+jobExpireTime:
+  Canceled: 1
+  UnrecoverableError: 7
+  Finished: 2

@@ -1,24 +1,16 @@
 {
-   "type": "postgres",
-   "host": "postgres",
+   "type": "postgresql",
+   "host": "localhost",
    "port": 5432,
-   "username": "postgres",
+   "user": "postgres",
    "password": "123456",
-   "database": "mira_video_manager",
-   "synchronize": false,
-   "logging": false,
+   "dbName": "mira_video_manager",
    "entities": [
-      "dist/entity/**/*.js"
+      "dist/entity/**/*.js",
+      "node_modules/@irohalab/mira-shared/entity/**/*.js"
    ],
-   "migrations": [
-      "dist/migration/**/*.js"
-   ],
-   "subscribers": [
-      "dist/subscriber/**/*.js"
-   ],
-   "cli": {
-      "entitiesDir": "dist/entity",
-      "migrationsDir": "dist/migration",
-      "subscribersDir": "dist/subscriber"
-   }
+   "entitiesTs": [
+      "src/entity/**/*.ts",
+      "node_modules/@irohalab/mira-shared/entity/**/*.ts"
+   ]
 }

@@ -67,7 +67,8 @@ services:
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/temp
+      - ${VM_LOG_DIR-/var/log/mira}:/var/log
     restart: unless-stopped
     command: 'node dist/main.js'
     depends_on:
@@ -92,7 +93,8 @@ services:
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/temp
+      - ${VM_LOG_DIR-/var/log/mira}:/var/log
     restart: unless-stopped
     command: 'node dist/main.js'
     depends_on:
@@ -117,7 +119,8 @@ services:
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/temp
+      - ${VM_LOG_DIR-/var/log/mira}:/var/log
     restart: unless-stopped
     command: 'node dist/WebServer.js'
     networks:
@@ -140,7 +143,8 @@ services:
     volumes:
       - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
-      - ${VM_PROFILE_DIR:-/var/mira/vm}:/app/temp
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/temp
+      - ${VM_LOG_DIR-/var/log/mira}:/var/log
     restart: unless-stopped
     command: 'node dist/WebServer.js'
     depends_on:
