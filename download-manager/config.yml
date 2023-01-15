@@ -30,3 +30,6 @@ webserver:
 
 # will deprecate once Albireo is deprecated
 albireoRPC: 'http://albireo-scheduler:8080'
+
+# how long to remove completed download job.
+completed_job_retention: 30 # days
