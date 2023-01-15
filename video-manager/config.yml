@@ -60,4 +60,4 @@ jobExpireTime:
   Finished: 2
 
 # fonts directory that can be used by ffmpeg
-fontsDir: ${project_root}/fonts
+fontsDir: '/extfont'

@@ -95,6 +95,7 @@ services:
       - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
       - ${VM_PROFILE_DIR:-/var/mira/vm}:/temp
       - ${VM_LOG_DIR-/var/log/mira}:/var/log
+      - ${VM_FONT_DIR-./video-manager/font}:/extfont
     restart: unless-stopped
     command: 'node dist/main.js'
     depends_on:
