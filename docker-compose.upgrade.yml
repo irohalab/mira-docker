@@ -1,0 +1,34 @@
+version: '3.9'
+services:
+  video-manager-upgrade:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'video-manager-upgrade'
+    profiles: [ 'video-manager' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+    volumes:
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+    networks:
+      - mira
+    command: 'npm run migrate:upgrade'
+
+  download-manager-init:
+    image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
+    profiles: [ 'download-manager' ]
+    container_name: 'download-manager-upgrade'
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+    volumes:
+      - ${DM_CONFIG_DIR:-./download-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${DM_CONFIG_DIR:-./download-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+    networks:
+      - mira
+    command: 'npm run migrate:upgrade'
+
+networks:
+  mira:
+    external: true
+    name: mira
