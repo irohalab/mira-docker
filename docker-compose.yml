@@ -1,9 +1,4 @@
 version: '3.9'
-x-logging: &default-logging
-  driver: json-file
-  options:
-    max_size: '10m'
-    max_file: '5'
 services:
   postgres:
     image: postgres:${POSTGRES_VERSION:-12.8}
@@ -21,7 +16,11 @@ services:
     restart: unless-stopped
     networks:
       - mira
-    logging: *default-logging
+    logging:
+      driver: json-file
+      options:
+        max_size: '10m'
+        max_file: '5'
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     profiles: ['prod', 'qbt']
@@ -40,7 +39,11 @@ services:
       - ${QBT_CONFIG_LOCATION:-./qb/qbittorrent}:/config
     networks:
       - mira
-    logging: *default-logging
+    logging:
+      driver: json-file
+      options:
+        max_size: '10m'
+        max_file: '5'
   picfit:
     image: mira/picfit
     profiles: ['picfit', 'prod']
@@ -52,7 +55,11 @@ services:
     restart: always
     networks:
       - mira
-    logging: *default-logging
+    logging:
+      driver: json-file
+      options:
+        max_size: '10m'
+        max_file: '5'
   nginx:
     image: nginx:1.19
     profiles: ['prod', 'nginx']
@@ -68,7 +75,11 @@ services:
     networks:
       - mira
       - local
-    logging: *default-logging
+    logging:
+      driver: json-file
+      options:
+        max_size: '10m'
+        max_file: '5'
   rabbitmq:
     image: rabbitmq:3-management
     profiles: [ 'prod', 'rabbitmq' ]
@@ -86,7 +97,11 @@ services:
     restart: always
     networks:
       - mira
-    logging: *default-logging
+    logging:
+      driver: json-file
+      options:
+        max_size: '10m'
+        max_file: '5'
 networks:
   local:
     external: true
