@@ -79,7 +79,28 @@ services:
       options:
         max_size: 10m
         max_file: 5
-
+  rabbitmq:
+    image: rabbitmq:3-management
+    profiles: [ 'prod', 'rabbitmq' ]
+    container_name: rabbitmq
+    hostname: ${RABBITMQ_HOSTNAME:-quark_mq}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/}
+    ports:
+     - '${RABBITMQ_MANAGEMENT_PORT:-15672}:15672'
+    volumes:
+      - ${RABBITMQ_DATA:-./rabbitmq/data}:/var/lib/rabbitmq:rw
+      - ${RABBITMQ_CONFIG:-./rabbitmq/config/rabbitmq.config}:/etc/rabbitmq/rabbitmq.config:rw
+    restart: always
+    networks:
+      - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 networks:
   mira:
     external: true
