@@ -14,7 +14,7 @@ services:
       - mira
     command: 'npm run migrate:upgrade'
 
-  download-manager-init:
+  download-manager-upgrade:
     image: 'ghcr.io/irohalab/mira-download-manager:${DOWNLOAD_MANAGER_TAG}'
     profiles: [ 'download-manager' ]
     container_name: 'download-manager-upgrade'
@@ -27,7 +27,27 @@ services:
     networks:
       - mira
     command: 'npm run migrate:upgrade'
-
+  albireo-upgrade:
+    image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
+    container_name: 'albireo-server'
+    profiles: ['albireo']
+    environment:
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: '/usr/app'
+    # you can comment out this if your reverse-proxy is using the same docker network
+#    ports:
+#      - ${ALBIREO_PORT:-30001}:5000
+    volumes:
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/config.yml:/usr/app/config/config.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/sentry.yml:/usr/app/config/sentry.yml:ro
+      - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
+#      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'alembic upgrade head'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - mira
 networks:
   mira:
     external: true
