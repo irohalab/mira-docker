@@ -107,6 +107,33 @@ services:
       options:
         max_size: 10m
         max_file: 5
+  video-manager-job-executor-meta:
+    image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
+    container_name: 'mira-video-manager_job-executor-meta'
+    profiles: [ 'video-manager', 'prod' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      ORMCONFIG: /etc/mira/ormconfig.json
+      START_AS: JOB_EXECUTOR
+      EXEC_MODE: META_MODE
+      SERVER_BASE_URL: ${VM_SERVER_BASE_URL:-http://video-manager-job-executor-file-server:8082}
+    volumes:
+      - ${VM_CONFIG_DIR:-./video-manager}/config.yml:/etc/mira/config.yml:ro
+      - ${VM_CONFIG_DIR:-./video-manager}/ormconfig.json:/etc/mira/ormconfig.json:ro
+      - ${VM_PROFILE_DIR:-/var/mira/vm}:/temp
+      - ${VM_LOG_DIR-/var/log/mira}:/var/log
+      - ${VM_FONT_DIR-./video-manager/font}:/extfont
+    restart: unless-stopped
+    command: 'node dist/main.js'
+    depends_on:
+      - postgres
+    networks:
+      - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 
   video-manager-api:
     image: 'ghcr.io/irohalab/mira-video-manager:${VIDEO_MANAGER_TAG}'
