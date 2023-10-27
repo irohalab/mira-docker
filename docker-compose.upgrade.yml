@@ -29,7 +29,7 @@ services:
     command: 'npm run migrate:upgrade'
   albireo-upgrade:
     image: 'ghcr.io/irohalab/albireo:${ALBIREO_TAG}'
-    container_name: 'albireo-server'
+    container_name: 'albireo-upgrade'
     profiles: ['albireo']
     environment:
       PYTHONUNBUFFERED: 1
@@ -43,9 +43,6 @@ services:
       - ${ALBIREO_CONFIG_DIR:-./albireo}/alembic.ini:/usr/app/alembic.ini:ro
 #      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
     command: 'alembic upgrade head'
-    restart: unless-stopped
-    depends_on:
-      - postgres
     networks:
       - mira
 networks:
