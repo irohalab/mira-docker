@@ -79,11 +79,14 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/}
+#      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-kernel inetrc '/etc/rabbitmq/erl_inetrc' -proto_dist inet6_tcp"
+#      RABBITMQ_CTL_ERL_ARGS: "-proto_dist inet6_tcp"
     ports:
      - '${RABBITMQ_MANAGEMENT_PORT:-15672}:15672'
     volumes:
       - ${RABBITMQ_DATA:-./rabbitmq/data}:/var/lib/rabbitmq:rw
-      - ${RABBITMQ_CONFIG:-./rabbitmq/config/rabbitmq.config}:/etc/rabbitmq/rabbitmq.config:rw
+      - ${RABBITMQ_CONFIG:-./rabbitmq/config/rabbitmq.conf}:/etc/rabbitmq/rabbitmq.conf:rw
+#      - ${RABBITMQ_ERL_INETRC:-./rabbitmq/config/erl_inetrc}:/etc/rabbitmq/erl_inetrc
     restart: always
     networks:
       - mira
