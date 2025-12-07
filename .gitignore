@@ -4,7 +4,9 @@ venv
 web/env
 web/config.json
 .config.json
+.env
 
 web/build
 picfit/build
 lib/__pycache__/
+rabbitmq/data

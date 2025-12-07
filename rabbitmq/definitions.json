@@ -1,0 +1,37 @@
+{
+    "permissions": [
+        {
+            "user": "mira_rabbit",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "bindings": [],
+    "queues": [],
+    "policies": [],
+    "parameters": [],
+    "rabbitmq_version": "4.2.1",
+    "rabbit_version": "4.2.1",
+    "exchanges": [],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "users": [
+        {
+            "name": "mira_rabbit",
+            "password": "f8d6acfa7b8b",
+            "tags": ["administrator"]
+        }
+    ],
+    "global_parameters": [
+        {
+            "name": "cluster_name",
+            "value": "rabbit@quark_mq"
+        }
+    ],
+    "topic_permissions": []
+}

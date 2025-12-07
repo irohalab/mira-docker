@@ -71,22 +71,23 @@ services:
       - local
     logging: *default-logging
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4.2-management
     profiles: [ 'prod', 'rabbitmq' ]
     container_name: rabbitmq
     hostname: ${RABBITMQ_HOSTNAME:-quark_mq}
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
-      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/}
-#      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-kernel inetrc '/etc/rabbitmq/erl_inetrc' -proto_dist inet6_tcp"
-#      RABBITMQ_CTL_ERL_ARGS: "-proto_dist inet6_tcp"
+      # Tell RabbitMQ to load the definitions file on boot
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
     ports:
-     - '${RABBITMQ_MANAGEMENT_PORT:-15672}:15672'
+      - '${RABBITMQ_PORT:-5672}:5672'
+      - '${RABBITMQ_MANAGEMENT_PORT:-15672}:15672'
     volumes:
       - ${RABBITMQ_DATA:-./rabbitmq/data}:/var/lib/rabbitmq:rw
-      - ${RABBITMQ_CONFIG:-./rabbitmq/config/rabbitmq.conf}:/etc/rabbitmq/rabbitmq.conf:rw
-#      - ${RABBITMQ_ERL_INETRC:-./rabbitmq/config/erl_inetrc}:/etc/rabbitmq/erl_inetrc
+      - ${RABBITMQ_CONFIG:-./rabbitmq/rabbitmq.conf}:/etc/rabbitmq/conf.d/20-custom.conf:ro
+      # Mount the definitions (Users & Permissions)
+      - ${RABBITMQ_DEFINITIONS:-./rabbitmq/definitions.json}:/etc/rabbitmq/definitions.json:ro
     restart: always
     networks:
       - mira
