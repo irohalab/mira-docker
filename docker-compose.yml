@@ -55,7 +55,7 @@ services:
       - mira
     logging: *default-logging
   nginx:
-    image: nginx:1.19
+    image: nginx:1.30.1
     profiles: ['prod', 'nginx']
     #ports:
     #  - '80:80'
