@@ -70,6 +70,23 @@ services:
     command: 'node dist/tools.js --resourceGroup'
     networks:
       - mira
+  streaming-platform-token:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-token'
+    profiles: [ 'streaming_platform_token' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --token'
+    networks:
+      - mira
 
 networks:
   mira:
