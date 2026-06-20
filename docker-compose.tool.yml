@@ -1,0 +1,77 @@
+services:
+  streaming-platform-init-db:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-init-db'
+    profiles: [ 'streaming_platform_init_db' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --init'
+    networks:
+      - mira
+
+  streaming-platform-client-mapping:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-client-mapping'
+    profiles: [ 'streaming_platform_client_mapping' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --clientMapping'
+    networks:
+      - mira
+
+  streaming-platform-update-bgm:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-update-bgm'
+    profiles: [ 'streaming_platform_update_bgm' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --updateBgm'
+    networks:
+      - mira
+
+  streaming-platform-init-resource-group:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-init-resource-group'
+    profiles: [ 'streaming_platform_init_resource_group' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --resourceGroup'
+    networks:
+      - mira
+
+networks:
+  mira:
+    external: true
+    name: mira

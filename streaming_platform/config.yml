@@ -1,0 +1,73 @@
+# available values: RabbitMQ, LavinMQ
+amqpServerType: RabbitMQ
+amqpServerUrl: amqp://mira_rabbit:f8d6acfa7b8b@localhost:5672/
+siteRoot: 'http://localhost:4200'
+domain:
+  image: ''
+  video: ''
+local:
+  videoBasePath: '${HOME}/Videos/albireo'
+Server:
+  port: 9091
+OAuth2:
+  audience: https://iroha.io
+  issuer: ''
+  jwksUri: ''
+  oidcDiscoveryUrl: http://box.moe:4444
+  tokenEndpoint: ''
+  tokenTTL: 300 # unit is second
+ServiceClient:
+  clientId: 9e2b0512-c267-4b63-a1c1-0da5bfd33ed9
+  clientSecret: q~3j7fnvevzoLbf_Ue3ctRsVUg
+  webhook:
+    secret: U3MspMcWwaDej6nc
+# Migration From Albireo account configuration
+migrationAlbireo:
+  jwtIssuer: 'albireo'
+  jwtAudience: 'mira-migration'
+  jwtSecret: 'CHANGE-TO-A-VERY-LONG-SECRET'
+# In local development, here we use oryd/mailslurper to start a simple web-based smtp server.
+# All options are NodeMail options. For full option list, see https://nodemailer.com/smtp
+smtpServer:
+  service: '' # Well-known email service that override the rest configuration. For full list, see NodeMail document https://nodemailer.com/smtp/well-known-services
+  host: 'localhost'
+  port: 2500
+  secure: true
+  auth:
+    user: 'test'
+    pass: 'test'
+  tls:
+    rejectUnauthorized: false # do not fail  on invalid certificates
+emailSender: 'Project Mira <no-reply@dev.iroha.io>' # the sender name and email
+
+BangumiProviderAPIBaseUrl: http://box.moe:8080/api
+DownloadManagerServerUrl: http://localhost:8081
+VideoManagerServerUrl: http://localhost:8083
+
+# Universal Feed
+feed:
+  dmhy: https://res.iroha.io/dmhy/item
+  bangumi_moe: https://res.iroha.io/bangumi-moe/item
+  nyaa: https://res.iroha.io/nyaa/item
+  acg_rip: https://res.iroha.io/acg-rip/item
+  mikanani_me: https://res.iroha.io/mikanani-me/item
+
+# this will be passed into S3Client() as configuration
+s3_config:
+  endpoint: 'http://127.0.0.1:8333'
+  # specify region since it is mandatory, but it will be ignored by seaweedfs
+  region: 'us-east-1'
+  # force path style for compatibility reasons
+  forcePathStyle: true
+  # dual stack endpoint is not supported by seaweed
+  useDualstackEndpoint: false
+  # checksum validation should be disabled, overwise `x-amz-checksum` will be injected directly into files
+  responseChecksumValidation: 'WHEN_REQUIRED'
+  requestChecksumCalculation: 'WHEN_REQUIRED'
+  # credentials is mandatory and s3 authorization should be enabled with `s3.configure`
+  credentials:
+    accessKeyId: 'admin'
+    secretAccessKey: 'admin'
+
+# This bucket is used to upload processed files
+s3_bucket: 'public-static'

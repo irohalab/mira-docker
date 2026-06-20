@@ -242,7 +242,32 @@ services:
       options:
         max_size: 10m
         max_file: 5
-
+  mira-streaming-platform:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'mira-streaming-platform'
+    profiles: ['streaming_platform']
+    environment:
+      INIT_DB_VIEWS_ON_START: 'true'
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-'postgres'}
+      DB_NAME: ${ALBIREO_DB_NAME:-'albireo'}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/main.js'
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - mira
+    logging:
+      driver: json-file
+      options:
+        max_size: 10m
+        max_file: 5
 networks:
   mira:
     external: true
