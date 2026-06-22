@@ -88,6 +88,61 @@ services:
     networks:
       - mira
 
+  streaming-platform-export-cleanup:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-export-cleanup'
+    profiles: [ 'streaming_platform_export_cleanup' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/cleanup:/etc/mira/cleanup:rw
+    command: 'node dist/tools.js --exportCleanup /etc/mira/cleanup/episode-cleanup.json'
+    networks:
+      - mira
+
+  streaming-platform-cleanup-episodes:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-cleanup-episodes'
+    profiles: [ 'streaming_platform_cleanup_episodes' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/cleanup:/etc/mira/cleanup:rw
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --cleanupEpisodes /etc/mira/cleanup/episode-cleanup.json'
+    networks:
+      - mira
+
+  streaming-platform-force-update:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-force-update'
+    profiles: [ 'streaming_platform_force_update' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/cleanup:/etc/mira/cleanup:rw
+    command: 'node dist/tools.js --forceUpdate /etc/mira/cleanup/episode-cleanup.json'
+    networks:
+      - mira
+
 networks:
   mira:
     external: true
