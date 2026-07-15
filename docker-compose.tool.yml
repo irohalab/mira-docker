@@ -156,11 +156,48 @@ services:
       NODE_ENV: 'production'
     volumes:
       - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
-      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/cleanup:/etc/mira/cleanup:rw
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/scan:/etc/mira/scan:rw
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
     command: 'node dist/tools.js --scanOrphanFiles /etc/mira/scan'
     networks:
       - mira
 
+  streaming-platform-remove-orphan-files:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-force-update'
+    profiles: [ 'streaming_platform_remove_orphan_files' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/scan:/etc/mira/scan:rw
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --removeOrphanFiles /etc/mira/scan'
+    networks:
+      - mira
+  streaming-platform-remove-duplicate-video-files:
+    image: 'ghcr.io/irohalab/mira-streaming-platform:${STREAMING_PLATFORM_TAG}'
+    container_name: 'streaming-platform-force-update'
+    profiles: [ 'streaming_platform_remove_dup_video_files' ]
+    environment:
+      APPCONFIG: /etc/mira/config.yml
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_NAME: ${ALBIREO_DB_NAME:-albireo}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      NODE_ENV: 'production'
+    volumes:
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/scan:/etc/mira/scan:rw
+      - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
+    command: 'node dist/tools.js --removeDuplicateVideoFiles /etc/mira/scan'
+    networks:
+      - mira
 networks:
   mira:
     external: true
