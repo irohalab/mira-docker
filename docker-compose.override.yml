@@ -256,8 +256,10 @@ services:
       NODE_ENV: 'production'
     volumes:
       - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/config.yml:/etc/mira/config.yml:ro
+      - ${STREAMING_PLATFORM_CONFIG_PATH:-./streaming_platform}/tmp:/tmp:rw
       - ${DOWNLOAD_DATA:-/data/albireo}:/data/albireo:rw
-    command: 'node dist/main.js'
+    command: 'node --cpu-prof --cpu-prof-dir=/tmp/prof dist/main.js'
+    stop_grace_period: 30s
     restart: unless-stopped
     depends_on:
       - postgres
