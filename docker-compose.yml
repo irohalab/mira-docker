@@ -70,6 +70,7 @@ services:
     networks:
       - mira
       - local
+      - seaweedfs
     logging: *default-logging
   rabbitmq:
     image: rabbitmq:4.2-management
@@ -100,3 +101,8 @@ networks:
   mira:
     external: true
     name: mira
+  # Network owned by the SeaweedFS compose project; nginx joins it so it can
+  # reach the S3 gateway by service name without publishing any host port.
+  seaweedfs:
+    external: true
+    name: ${SEAWEEDFS_NETWORK:-seaweedfs}
