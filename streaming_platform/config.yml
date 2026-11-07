@@ -69,5 +69,28 @@ s3_config:
     accessKeyId: 'admin'
     secretAccessKey: 'admin'
 
-# This bucket is used to upload processed files
-s3_bucket: 'public-static'
+
+# The config for access S3 bucket and convert the S3 URI in the VideoFile to http url.
+s3PublicConfig:
+  videoBucket: 'public-video'
+  imageBucket: 'public-image'
+  # the HttpURLPattern should have {bucket} and {key} as placeholder to be replaced by the S3 bucket and key.
+  videoHttpURLPattern: 'http://localhost:8333/{bucket}/{key}'
+  imageHttpURLPattern: 'http://localhost:8333/{bucket}/{key}'
+  fallbackURLPattern: 'http://localhost:8333/{bucket}/{key}'
+
+favoriteSyncLogBucket: 'private-favorite-sync'
+favoriteSyncLogHttpURLPattern: 'http://localhost:8333/{bucket}/{key}'
+
+# Incremental migration of legacy local media into the public S3 buckets.
+# The worker uses local.videoBasePath for both videos and images.
+localToS3Migration:
+  enabled: true
+  retainedSourceLimitGiB: 100
+  canaryVideoFileCount: 10
+  batchVideoFileLimit: 50
+  batchSourceLimitGiB: 50
+  batchReviewSampleCount: 3
+  workerPollSeconds: 5
+  # 0 disables bandwidth throttling.
+  transferBytesPerSecond: 0
